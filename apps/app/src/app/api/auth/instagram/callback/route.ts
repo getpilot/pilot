@@ -66,18 +66,21 @@ export async function GET(request: Request) {
       user_id: professionalUserId,
     } = profileResponse.data as {
       username: string;
-      user_id?: string;
+      user_id?: string | number;
     };
 
     if (!professionalUserId) {
       throw new Error("Instagram profile response did not return user_id");
     }
 
+    const normalizedAppScopedUserId = String(appScopedUserId);
+    const normalizedProfessionalUserId = String(professionalUserId);
+
     console.log(
       "Instagram connection successful for:",
       username,
-      professionalUserId,
-      appScopedUserId,
+      normalizedProfessionalUserId,
+      normalizedAppScopedUserId,
     );
 
     const longLivedTokenResponse = await axios.get(
@@ -100,8 +103,8 @@ export async function GET(request: Request) {
     }
 
     const result = await saveInstagramConnection({
-      instagramUserId: professionalUserId,
-      appScopedUserId,
+      instagramUserId: normalizedProfessionalUserId,
+      appScopedUserId: normalizedAppScopedUserId,
       username,
       accessToken: longLivedToken,
       expiresIn: expires_in,

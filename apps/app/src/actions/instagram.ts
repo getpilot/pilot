@@ -10,12 +10,16 @@ import {
   fetchRecentInstagramMedia,
 } from "@pilot/instagram";
 
+const InstagramIdSchema = z
+  .union([z.string(), z.number(), z.bigint()])
+  .transform((value) => String(value));
+
 const InstagramConnectionSchema = z.object({
-  instagramUserId: z.string(),
-  appScopedUserId: z.string(),
+  instagramUserId: InstagramIdSchema,
+  appScopedUserId: InstagramIdSchema,
   username: z.string(),
   accessToken: z.string(),
-  expiresIn: z.number(),
+  expiresIn: z.coerce.number().positive(),
 });
 
 export async function getInstagramIntegration() {
