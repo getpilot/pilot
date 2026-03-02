@@ -1,5 +1,6 @@
 import { authUrl, graphUrl, instagramRequest } from "./client";
 import type {
+  InstagramCodeExchangeResult,
   InstagramLongLivedToken,
   InstagramMediaItem,
   InstagramProfile,
@@ -30,8 +31,11 @@ export async function exchangeCodeForAccessToken(params: {
   clientSecret: string;
   redirectUri: string;
   code: string;
-}): Promise<{ accessToken: string }> {
-  const response = await instagramRequest<{ access_token?: string }>({
+}): Promise<InstagramCodeExchangeResult> {
+  const response = await instagramRequest<{
+    access_token?: string;
+    user_id?: string | number | bigint;
+  }>({
     method: "POST",
     url: authUrl("/oauth/access_token"),
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -44,7 +48,15 @@ export async function exchangeCodeForAccessToken(params: {
     }),
   });
 
-  if (response.status < 200 || response.status >= 300 || !response.data?.access_token) {
+  const accessToken = response.data?.access_token;
+  const appScopedUserId = normalizeInstagramId(response.data?.user_id);
+
+  if (
+    response.status < 200 ||
+    response.status >= 300 ||
+    !accessToken ||
+    !appScopedUserId
+  ) {
     const detail = extractInstagramErrorDetail(response.data);
     throw new Error(
       detail
@@ -53,16 +65,21 @@ export async function exchangeCodeForAccessToken(params: {
     );
   }
 
-  return { accessToken: response.data.access_token };
+  return { accessToken, appScopedUserId };
 }
 
 export async function fetchInstagramProfile(params: {
   accessToken: string;
   igUserId?: string;
 }): Promise<InstagramProfile> {
-  const profilePath = params.igUserId ? `/${params.igUserId}` : "/me";
-  const fields = params.igUserId ? "username,user_id" : "id,username,user_id";
-  const response = await instagramRequest<InstagramProfile>({
+  const normalizedIgUserId = params.igUserId ? String(params.igUserId) : null;
+  const profilePath = normalizedIgUserId ? `/${normalizedIgUserId}` : "/me";
+  const fields = normalizedIgUserId ? "username,user_id" : "id,username,user_id";
+  const response = await instagramRequest<{
+    id?: string | number | bigint;
+    username?: string;
+    user_id?: string | number | bigint;
+  }>({
     method: "GET",
     url: graphUrl(profilePath),
     params: {
@@ -71,11 +88,19 @@ export async function fetchInstagramProfile(params: {
     },
   });
 
-  if (response.status < 200 || response.status >= 300) {
+  const id = normalizeInstagramId(response.data?.id) ?? normalizedIgUserId;
+  const username = response.data?.username;
+  const userId = normalizeInstagramId(response.data?.user_id);
+
+  if (response.status < 200 || response.status >= 300 || !id || !username) {
     throw new Error(`Failed to fetch Instagram profile (${response.status})`);
   }
 
-  return response.data;
+  return {
+    id,
+    username,
+    user_id: userId ?? undefined,
+  };
 }
 
 export async function exchangeLongLivedInstagramToken(params: {
@@ -84,7 +109,7 @@ export async function exchangeLongLivedInstagramToken(params: {
 }): Promise<InstagramLongLivedToken> {
   const response = await instagramRequest<{
     access_token?: string;
-    expires_in?: number;
+    expires_in?: number | string;
   }>({
     method: "GET",
     url: graphUrl("/access_token"),
@@ -94,12 +119,14 @@ export async function exchangeLongLivedInstagramToken(params: {
       access_token: params.accessToken,
     },
   });
+  const accessToken = response.data?.access_token;
+  const expiresIn = Number(response.data?.expires_in);
 
   if (
     response.status < 200 ||
     response.status >= 300 ||
-    !response.data?.access_token ||
-    typeof response.data?.expires_in !== "number"
+    !accessToken ||
+    !Number.isFinite(expiresIn)
   ) {
     throw new Error(
       `Failed to exchange Instagram long-lived token (${response.status})`,
@@ -107,8 +134,8 @@ export async function exchangeLongLivedInstagramToken(params: {
   }
 
   return {
-    accessToken: response.data.access_token,
-    expiresIn: response.data.expires_in,
+    accessToken,
+    expiresIn,
   };
 }
 
@@ -117,7 +144,7 @@ export async function refreshLongLivedInstagramToken(params: {
 }): Promise<InstagramLongLivedToken> {
   const response = await instagramRequest<{
     access_token?: string;
-    expires_in?: number;
+    expires_in?: number | string;
   }>({
     method: "GET",
     url: graphUrl("/refresh_access_token"),
@@ -126,19 +153,21 @@ export async function refreshLongLivedInstagramToken(params: {
       access_token: params.accessToken,
     },
   });
+  const accessToken = response.data?.access_token;
+  const expiresIn = Number(response.data?.expires_in);
 
   if (
     response.status < 200 ||
     response.status >= 300 ||
-    !response.data?.access_token ||
-    typeof response.data?.expires_in !== "number"
+    !accessToken ||
+    !Number.isFinite(expiresIn)
   ) {
     throw new Error(`Failed to refresh Instagram token (${response.status})`);
   }
 
   return {
-    accessToken: response.data.access_token,
-    expiresIn: response.data.expires_in,
+    accessToken,
+    expiresIn,
   };
 }
 
@@ -210,6 +239,24 @@ function extractInstagramErrorDetail(data: unknown): string | null {
     if (parts.length > 0) {
       return parts.join(" | ");
     }
+  }
+
+  return null;
+}
+
+function normalizeInstagramId(
+  value: string | number | bigint | null | undefined,
+): string | null {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  if (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "bigint"
+  ) {
+    return String(value);
   }
 
   return null;

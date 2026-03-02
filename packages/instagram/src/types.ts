@@ -19,6 +19,11 @@ export type InstagramProfile = {
   user_id?: string;
 };
 
+export type InstagramCodeExchangeResult = {
+  accessToken: string;
+  appScopedUserId: string;
+};
+
 export type InstagramMediaItem = {
   id: string;
   caption?: string;
