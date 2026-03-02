@@ -45,7 +45,12 @@ export async function exchangeCodeForAccessToken(params: {
   });
 
   if (response.status < 200 || response.status >= 300 || !response.data?.access_token) {
-    throw new Error(`Failed to exchange Instagram code (${response.status})`);
+    const detail = extractInstagramErrorDetail(response.data);
+    throw new Error(
+      detail
+        ? `Failed to exchange Instagram code (${response.status}): ${detail}`
+        : `Failed to exchange Instagram code (${response.status})`,
+    );
   }
 
   return { accessToken: response.data.access_token };
@@ -172,4 +177,34 @@ export async function fetchRecentInstagramMedia(params: {
 
   const items = response.data?.data;
   return Array.isArray(items) ? (items as InstagramMediaItem[]) : [];
+}
+
+function extractInstagramErrorDetail(data: unknown): string | null {
+  if (!data || typeof data !== "object") {
+    return null;
+  }
+
+  const record = data as Record<string, unknown>;
+
+  if (typeof record.error_message === "string" && record.error_message.length > 0) {
+    return record.error_message;
+  }
+
+  if (record.error && typeof record.error === "object") {
+    const error = record.error as Record<string, unknown>;
+    const parts = [
+      typeof error.message === "string" ? error.message : null,
+      typeof error.type === "string" ? `type=${error.type}` : null,
+      typeof error.code === "number" ? `code=${error.code}` : null,
+      typeof error.error_subcode === "number"
+        ? `subcode=${error.error_subcode}`
+        : null,
+    ].filter((value): value is string => Boolean(value));
+
+    if (parts.length > 0) {
+      return parts.join(" | ");
+    }
+  }
+
+  return null;
 }
