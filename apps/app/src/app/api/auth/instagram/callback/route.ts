@@ -12,7 +12,7 @@ const INSTAGRAM_CLIENT_SECRET = process.env.INSTAGRAM_CLIENT_SECRET;
 export async function GET(request: Request) {
   const redirectUri = new URL("/api/auth/instagram/callback", request.url).toString();
   const { searchParams } = new URL(request.url);
-  const code = searchParams.get("code");
+  const code = getRawQueryParam(request.url, "code");
   const error = searchParams.get("error");
 
   if (error) {
@@ -69,4 +69,27 @@ export async function GET(request: Request) {
       `${process.env.NEXT_PUBLIC_APP_URL}/settings?error=auth_failed`
     );
   }
+}
+
+function getRawQueryParam(url: string, key: string): string | null {
+  const queryStart = url.indexOf("?");
+  if (queryStart === -1) {
+    return null;
+  }
+
+  const query = url.slice(queryStart + 1).split("#", 1)[0];
+  for (const pair of query.split("&")) {
+    if (!pair) {
+      continue;
+    }
+
+    const [rawKey, ...rawValueParts] = pair.split("=");
+    if (decodeURIComponent(rawKey) !== key) {
+      continue;
+    }
+
+    return decodeURIComponent(rawValueParts.join("="));
+  }
+
+  return null;
 }
