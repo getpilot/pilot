@@ -14,15 +14,15 @@ export function buildInstagramAuthUrl(params: {
   scope?: string;
 }): string {
   const scope = params.scope ?? DEFAULT_SCOPE;
-  const query = new URLSearchParams({
-    enable_fb_login: "0",
-    force_authentication: "1",
-    client_id: params.clientId,
-    redirect_uri: params.redirectUri,
-    response_type: "code",
-    scope,
-  });
-  return `https://www.instagram.com/oauth/authorize?${query.toString()}`;
+  return (
+    "https://www.instagram.com/oauth/authorize" +
+    `?enable_fb_login=0` +
+    `&force_authentication=1` +
+    `&client_id=${params.clientId}` +
+    `&redirect_uri=${params.redirectUri}` +
+    `&response_type=code` +
+    `&scope=${scope}`
+  );
 }
 
 export async function exchangeCodeForAccessToken(params: {
