@@ -11,6 +11,7 @@ import { ArrowRight, Check } from "lucide-react";
 import {
   type PaidPlanId,
   formatPlanPrice,
+  getCheckoutConfig,
   hasAnyYearlyPricing,
   isPaidPlanId,
   pricingPlans,
@@ -42,15 +43,17 @@ export default function UpgradePage() {
         </div>
 
         {showYearlyToggle && (
-          <div className="mt-10 flex items-center justify-center">
+          <div className="flex items-center justify-center mt-10">
             <div
-              className="relative flex w-65 items-center justify-between rounded-full border bg-muted"
+              className="flex items-center justify-between bg-muted rounded-full relative w-[300px] border"
               role="radiogroup"
               aria-label="Billing frequency"
             >
               <button
                 onClick={() => setIsYearly(false)}
-                className="relative z-10 w-65 py-3 px-6 text-center text-sm font-medium"
+                className={`relative z-10 py-3 px-6 text-sm font-medium w-[120px] text-center ${
+                  !isYearly ? "text-white" : ""
+                }`}
                 role="radio"
                 aria-checked={!isYearly}
                 aria-label="Monthly billing"
@@ -59,23 +62,21 @@ export default function UpgradePage() {
               </button>
               <button
                 onClick={() => setIsYearly(true)}
-                className="relative z-10 w-65 py-3 px-6 text-center text-sm font-medium"
+                className={`relative z-10 py-3 px-6 text-sm font-medium w-[180px] text-center ${
+                  isYearly ? "text-white" : ""
+                }`}
                 role="radio"
                 aria-checked={isYearly}
                 aria-label="Yearly billing"
               >
-                Yearly
+                Yearly (20% off)
               </button>
               <motion.div
-                className="absolute z-0 rounded-full bg-primary text-primary-foreground"
+                className="absolute z-0 rounded-full bg-primary"
                 initial={false}
-                animate={{ x: isYearly ? 130 : 0 }}
-                transition={
-                  shouldReduceMotion
-                    ? { duration: 0 }
-                    : { type: "spring", stiffness: 300, damping: 30 }
-                }
-                style={{ width: 130, height: "100%" }}
+                animate={{ x: isYearly ? 120 : 0 }}
+                transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
+                style={{ width: isYearly ? 180 : 120, height: "100%" }}
               />
             </div>
           </div>
@@ -84,6 +85,9 @@ export default function UpgradePage() {
         <div className="@xl:grid-cols-2 @4xl:grid-cols-4 mt-12 grid gap-4">
           {pricingPlans.map((plan) => {
             const isBestValue = plan.planId === "growth";
+            const checkoutConfig = isPaidPlanId(plan.planId)
+              ? getCheckoutConfig(plan.planId, isYearly)
+              : null;
 
             return (
               <Card
@@ -142,6 +146,7 @@ export default function UpgradePage() {
                       <Button
                         className="w-full gap-2"
                         variant={isBestValue ? "default" : "outline"}
+                        disabled={!checkoutConfig}
                         onClick={async () => {
                           await handleCheckout(
                             plan.planId as PaidPlanId,
@@ -149,7 +154,11 @@ export default function UpgradePage() {
                           );
                         }}
                       >
-                        Subscribe
+                        {checkoutConfig
+                          ? "Subscribe"
+                          : isYearly
+                            ? "Yearly soon"
+                            : "Subscribe"}
                         <ArrowRight className="size-4" />
                       </Button>
                     ) : (
