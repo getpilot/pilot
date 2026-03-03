@@ -4,6 +4,7 @@ import { verifyWebhookSignature } from "@pilot/instagram";
 import { processInstagramWebhook } from "@pilot/core/workflows/instagram-webhook";
 import { inngest } from "@/lib/inngest/client";
 import { env } from "@/env";
+import { getBillingStatus } from "@/lib/billing/enforce";
 
 type InstagramWebhookPayload = {
   object: string;
@@ -56,6 +57,7 @@ export async function POST(request: Request) {
       dbClient: db,
       inngestClient: inngest,
       payload,
+      resolveBillingStatus: getBillingStatus,
     });
 
     return NextResponse.json(result, { status: 200 });

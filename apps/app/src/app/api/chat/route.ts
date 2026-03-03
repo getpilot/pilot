@@ -50,11 +50,37 @@ import {
   searchContacts,
 } from "@/actions/sidekick/ai-tools/contacts";
 import { loadChatSession } from "@/lib/chat-store";
+import { getUser } from "@/lib/auth-utils";
+import { BillingLimitError, assertBillingAllowed } from "@/lib/billing/enforce";
+import { recordSidekickChatPromptUsage } from "@/lib/billing/usage";
 
 export const maxDuration = 40;
 
 export async function POST(req: Request) {
   const { message, id } = await req.json();
+  const user = await getUser();
+
+  if (!user) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    await assertBillingAllowed(user.id, "sidekick:chat");
+  } catch (error) {
+    if (error instanceof BillingLimitError) {
+      return Response.json(
+        {
+          code: error.code,
+          error: error.message,
+        },
+        { status: 403 },
+      );
+    }
+
+    throw error;
+  }
+
+  await recordSidekickChatPromptUsage(user.id, id);
   console.log("Chat API called with:", {
     messageId: message.id,
     sessionId: id,
