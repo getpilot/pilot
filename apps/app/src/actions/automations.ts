@@ -9,6 +9,7 @@ import {
 import { and, eq, desc, gt, isNull, or, ne } from "drizzle-orm";
 import { getUser, getRLSDb } from "@/lib/auth-utils";
 import { revalidatePath } from "next/cache";
+import { assertBillingAllowed } from "@/lib/billing/enforce";
 
 export type Automation = {
   id: string;
@@ -125,6 +126,8 @@ export async function createAutomation(
     throw new Error("Unauthorized");
   }
 
+  await assertBillingAllowed(user.id, "automation:create");
+
   if (!data.triggerWord || data.triggerWord.trim().length === 0) {
     throw new Error("Trigger word is required");
   }
@@ -205,6 +208,8 @@ export async function updateAutomation(
   if (!user) {
     throw new Error("Unauthorized");
   }
+
+  await assertBillingAllowed(user.id, "automation:mutate");
 
   const existing = await getAutomation(id);
   if (!existing) {
@@ -307,6 +312,8 @@ export async function deleteAutomation(id: string): Promise<void> {
   if (!user) {
     throw new Error("Unauthorized");
   }
+
+  await assertBillingAllowed(user.id, "automation:mutate");
 
   const existing = await getAutomation(id);
   if (!existing) {

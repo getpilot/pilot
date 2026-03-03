@@ -4,6 +4,8 @@ import { z } from "zod";
 import { getUser, getRLSDb } from "@/lib/auth-utils";
 import { user } from "@pilot/db/schema";
 import { eq } from "drizzle-orm";
+import { getBillingStatus } from "@/lib/billing/enforce";
+import { getPricingPlan } from "@/lib/constants/pricing";
 
 const updateUserProfileSchema = z.object({
   name: z
@@ -54,6 +56,15 @@ export async function getUserProfile() {
       return { success: false, error: "User profile not found" };
     }
 
+    const billingStatus = await getBillingStatus(currentUser.id);
+    const currentPlan = getPricingPlan(billingStatus.planId);
+    const quotaExceeded =
+      billingStatus.flags.isStructurallyFrozen ||
+      !billingStatus.flags.canCreateContact ||
+      !billingStatus.flags.canCreateAutomation ||
+      !billingStatus.flags.canUseSidekickChat ||
+      !billingStatus.flags.canSendSidekickReply;
+
     return {
       success: true,
       profile: {
@@ -63,6 +74,13 @@ export async function getUserProfile() {
         use_case: userProfile.use_case,
         business_type: userProfile.business_type,
         main_offering: userProfile.main_offering,
+        quota: {
+          planId: billingStatus.planId,
+          planName: currentPlan.title,
+          exceeded: quotaExceeded,
+          usage: billingStatus.usage,
+          limits: billingStatus.limits,
+        },
       },
     };
   } catch (error) {

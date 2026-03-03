@@ -30,6 +30,7 @@ import {
   getPersonalizedLeadAnalysisPrompt,
 } from "@pilot/core/sidekick/personalization";
 import { sanitizeText } from "@/lib/utils";
+import { assertBillingAllowed, BillingLimitError } from "@/lib/billing/enforce";
 import {
   fetchConversationMessagesForSync as fetchInstagramConversationMessagesForSync,
   fetchConversationsForSync as fetchInstagramConversationsForSync,
@@ -206,6 +207,8 @@ async function updateContactField(
       return { success: false, error: "Not authenticated" };
     }
 
+    await assertBillingAllowed(user.id, "contact:mutate");
+
     const db = await getRLSDb();
     const existingContact = await db.query.contact.findFirst({
       where: and(eq(contact.id, contactId), eq(contact.userId, user.id)),
@@ -229,6 +232,10 @@ async function updateContactField(
     revalidatePath("/contacts");
     return { success: true };
   } catch (error) {
+    if (error instanceof BillingLimitError) {
+      return { success: false, error: error.message };
+    }
+
     console.error(`Error updating contact ${field}:`, error);
     return { success: false, error: `Failed to update contact ${field}` };
   }
@@ -262,6 +269,8 @@ export async function updateContactHRNState(
       return { success: false, error: "Not authenticated" };
     }
 
+    await assertBillingAllowed(user.id, "contact:mutate");
+
     const db = await getRLSDb();
     const existingContact = await db.query.contact.findFirst({
       where: and(eq(contact.id, contactId), eq(contact.userId, user.id)),
@@ -286,6 +295,10 @@ export async function updateContactHRNState(
     revalidatePath("/contacts");
     return { success: true };
   } catch (error) {
+    if (error instanceof BillingLimitError) {
+      return { success: false, error: error.message };
+    }
+
     console.error("Error updating HRN state:", error);
     return { success: false, error: "Failed to update HRN state" };
   }
@@ -300,6 +313,8 @@ export async function updateContactFollowUpStatus(
     if (!user) {
       return { success: false, error: "Not authenticated" };
     }
+
+    await assertBillingAllowed(user.id, "contact:mutate");
 
     const db = await getRLSDb();
     const existingContact = await db.query.contact.findFirst({
@@ -321,6 +336,10 @@ export async function updateContactFollowUpStatus(
     revalidatePath("/contacts");
     return { success: true };
   } catch (error) {
+    if (error instanceof BillingLimitError) {
+      return { success: false, error: error.message };
+    }
+
     console.error("Error updating contact follow-up status:", error);
     return {
       success: false,
@@ -345,6 +364,8 @@ export async function updateContactAfterFollowUp(
       return { success: false, error: "Not authenticated" };
     }
 
+    await assertBillingAllowed(user.id, "contact:mutate");
+
     const db = await getRLSDb();
     const existingContact = await db.query.contact.findFirst({
       where: and(eq(contact.id, contactId), eq(contact.userId, user.id)),
@@ -366,6 +387,10 @@ export async function updateContactAfterFollowUp(
     revalidatePath("/contacts");
     return { success: true };
   } catch (error) {
+    if (error instanceof BillingLimitError) {
+      return { success: false, error: error.message };
+    }
+
     console.error("Error updating contact after follow-up:", error);
     return {
       success: false,
@@ -380,6 +405,8 @@ export async function addContactTagAction(contactId: string, tag: string) {
     if (!user) {
       return { success: false, error: "Not authenticated" };
     }
+
+    await assertBillingAllowed(user.id, "contact:mutate");
 
     const db = await getRLSDb();
     const existing = await db.query.contact.findFirst({
@@ -425,6 +452,10 @@ export async function addContactTagAction(contactId: string, tag: string) {
     revalidateTag(`user-tags-${user.id}`, "max");
     return { success: true };
   } catch (error) {
+    if (error instanceof BillingLimitError) {
+      return { success: false, error: error.message };
+    }
+
     console.error("addContactTagAction error:", error);
     return { success: false, error: "Failed to add tag" };
   }
@@ -436,6 +467,8 @@ export async function removeContactTagAction(contactId: string, tag: string) {
     if (!user) {
       return { success: false, error: "Not authenticated" };
     }
+
+    await assertBillingAllowed(user.id, "contact:mutate");
 
     const db = await getRLSDb();
     const existing = await db.query.contact.findFirst({
@@ -461,6 +494,10 @@ export async function removeContactTagAction(contactId: string, tag: string) {
     revalidateTag(`user-tags-${user.id}`, "max");
     return { success: true };
   } catch (error) {
+    if (error instanceof BillingLimitError) {
+      return { success: false, error: error.message };
+    }
+
     console.error("removeContactTagAction error:", error);
     return { success: false, error: "Failed to remove tag" };
   }
@@ -563,6 +600,7 @@ export async function syncInstagramContacts(fullSync?: boolean) {
   }
 
   try {
+    await assertBillingAllowed(user.id, "contact:mutate");
     console.log("Triggering contact sync for user:", user.id);
     await inngest.send({
       name: "contacts/sync",
@@ -579,6 +617,10 @@ export async function syncInstagramContacts(fullSync?: boolean) {
 
     return { success: true };
   } catch (error) {
+    if (error instanceof BillingLimitError) {
+      return { success: false, error: error.message };
+    }
+
     console.error("Error triggering contact sync:", error);
     return {
       success: false,
@@ -1237,6 +1279,8 @@ export async function generateFollowUpMessage(contactId: string) {
       return { success: false, error: "Not authenticated" };
     }
 
+    await assertBillingAllowed(user.id, "contact:mutate");
+
     const db = await getRLSDb();
     const contactData = await db.query.contact.findFirst({
       where: and(eq(contact.id, contactId), eq(contact.userId, user.id)),
@@ -1312,6 +1356,10 @@ export async function generateFollowUpMessage(contactId: string) {
     revalidatePath("/contacts");
     return { success: true, message: followUpText };
   } catch (error) {
+    if (error instanceof BillingLimitError) {
+      return { success: false, error: error.message };
+    }
+
     console.error("Error generating follow-up message:", error);
     return { success: false, error: "Failed to generate follow-up message" };
   }
