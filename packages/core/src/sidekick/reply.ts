@@ -12,6 +12,7 @@ export type GenerateReplyParams = {
   senderId: string;
   text: string;
   accessToken?: string;
+  igUserId?: string;
 };
 
 export type GenerateReplyResult = {
@@ -27,7 +28,7 @@ function buildContextFromMessages(messages: Array<{ who: string; message: string
 export async function generateReply(
   params: GenerateReplyParams,
 ): Promise<GenerateReplyResult | null> {
-  const { dbClient, userId, senderId, text, accessToken } = params;
+  const { dbClient, userId, senderId, text, accessToken, igUserId } = params;
 
   const settings = await dbClient.query.sidekickSetting.findFirst({
     where: eq(sidekickSetting.userId, userId),
@@ -44,7 +45,10 @@ export async function generateReply(
 
   if (accessToken) {
     try {
-      const conversationsResponse = await fetchConversations({ accessToken });
+      const conversationsResponse = await fetchConversations({
+        accessToken,
+        igUserId,
+      });
       if (conversationsResponse.status >= 200 && conversationsResponse.status < 300) {
         const conversations = Array.isArray(conversationsResponse.data?.data)
           ? conversationsResponse.data.data

@@ -1,4 +1,10 @@
-import { authUrl, graphUrl, instagramRequest } from "./client";
+import {
+  authUrl,
+  facebookGraphUrl,
+  IG_API_VERSION,
+  instagramRequest,
+  loginGraphUrl,
+} from "./client";
 import type {
   InstagramCodeExchangeResult,
   InstagramLongLivedToken,
@@ -81,7 +87,7 @@ export async function fetchInstagramProfile(params: {
     user_id?: string | number | bigint;
   }>({
     method: "GET",
-    url: graphUrl(profilePath),
+    url: loginGraphUrl(`/${IG_API_VERSION}${profilePath}`),
     params: {
       fields,
       access_token: params.accessToken,
@@ -112,7 +118,7 @@ export async function exchangeLongLivedInstagramToken(params: {
     expires_in?: number | string;
   }>({
     method: "GET",
-    url: graphUrl("/access_token"),
+    url: loginGraphUrl("/access_token"),
     params: {
       grant_type: "ig_exchange_token",
       client_secret: params.clientSecret,
@@ -147,7 +153,7 @@ export async function refreshLongLivedInstagramToken(params: {
     expires_in?: number | string;
   }>({
     method: "GET",
-    url: graphUrl("/refresh_access_token"),
+    url: loginGraphUrl("/refresh_access_token"),
     params: {
       grant_type: "ig_refresh_token",
       access_token: params.accessToken,
@@ -179,7 +185,7 @@ export async function validateInstagramToken(params: {
   const fields = params.igUserId ? "username,user_id" : "id,username";
   const response = await instagramRequest({
     method: "GET",
-    url: graphUrl(validationPath),
+    url: loginGraphUrl(`/${IG_API_VERSION}${validationPath}`),
     params: {
       fields,
       access_token: params.accessToken,
@@ -192,12 +198,16 @@ export async function validateInstagramToken(params: {
 
 export async function fetchRecentInstagramMedia(params: {
   accessToken: string;
+  igUserId?: string;
   limit?: number;
 }): Promise<InstagramMediaItem[]> {
   const limit = Math.max(1, Math.min(25, params.limit ?? 5));
+  const mediaPath = params.igUserId
+    ? `/${IG_API_VERSION}/${encodeURIComponent(params.igUserId)}/media`
+    : `/${IG_API_VERSION}/me/media`;
   const response = await instagramRequest<{ data?: unknown }>({
     method: "GET",
-    url: graphUrl("/me/media"),
+    url: facebookGraphUrl(mediaPath),
     params: {
       fields:
         "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp",

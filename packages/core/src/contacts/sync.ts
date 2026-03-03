@@ -28,6 +28,9 @@ const REQUEST_DELAY_MS = 200;
 type IntegrationRecord = {
   id: string;
   userId: string;
+  instagramUserId: string;
+  appScopedUserId: string | null;
+  username: string | null;
   accessToken: string;
   expiresAt: Date | string | null;
   lastSyncedAt: Date | string | null;
@@ -192,8 +195,14 @@ async function fetchInstagramIntegration(dbClient: any, userId: string) {
   return integration;
 }
 
-async function fetchInstagramConversations(accessToken: string) {
-  const conversations = (await fetchConversationsForSync({ accessToken })) as InstagramConversation[];
+async function fetchInstagramConversations(params: {
+  accessToken: string;
+  igUserId: string;
+}) {
+  const conversations = (await fetchConversationsForSync({
+    accessToken: params.accessToken,
+    igUserId: params.igUserId,
+  })) as InstagramConversation[];
 
   return conversations.filter(
     (item) => !!item && typeof item === "object" && Array.isArray(item.participants?.data),
@@ -346,7 +355,11 @@ export async function fetchAndStoreInstagramContacts(params: {
       return [];
     }
 
-    const conversations = await fetchInstagramConversations(integration.accessToken);
+    const igUserId = integration.instagramUserId;
+    const conversations = await fetchInstagramConversations({
+      accessToken: integration.accessToken,
+      igUserId,
+    });
     const allParticipants = conversations
       .map((conversation) =>
         conversation.participants.data.find(

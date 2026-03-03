@@ -1,4 +1,9 @@
-import { IG_API_VERSION, graphUrl, instagramRequest } from "./client";
+import {
+  facebookGraphUrl,
+  IG_API_VERSION,
+  graphUrl,
+  instagramRequest,
+} from "./client";
 
 export async function sendInstagramCommentReply(params: {
   igUserId: string;
@@ -85,7 +90,9 @@ export async function postPublicCommentReply(params: {
   try {
     const res = await instagramRequest<{ id?: string; message_id?: string }>({
       method: "POST",
-      url: graphUrl(`/${IG_API_VERSION}/${encodeURIComponent(commentId)}/replies`),
+      url: facebookGraphUrl(
+        `/${IG_API_VERSION}/${encodeURIComponent(commentId)}/replies`,
+      ),
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",

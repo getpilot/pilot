@@ -10,6 +10,8 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 
 export const IG_API_VERSION = "v25.0";
 export const GRAPH_BASE_URL = "https://graph.instagram.com";
+export const LOGIN_GRAPH_BASE_URL = "https://graph.instagram.com";
+export const FACEBOOK_GRAPH_BASE_URL = "https://graph.facebook.com";
 export const AUTH_BASE_URL = "https://api.instagram.com";
 
 export type InstagramRequestParams = {
@@ -32,6 +34,16 @@ export type InstagramRequestResult<T> = {
 export function graphUrl(path: string): string {
   const normalized = path.startsWith("/") ? path : `/${path}`;
   return `${GRAPH_BASE_URL}${normalized}`;
+}
+
+export function loginGraphUrl(path: string): string {
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  return `${LOGIN_GRAPH_BASE_URL}${normalized}`;
+}
+
+export function facebookGraphUrl(path: string): string {
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  return `${FACEBOOK_GRAPH_BASE_URL}${normalized}`;
 }
 
 export function authUrl(path: string): string {

@@ -203,6 +203,7 @@ export async function getRecentInstagramPosts(limit: number = 5) {
 
   const items = await fetchRecentInstagramMedia({
     accessToken: integration.accessToken,
+    igUserId: integration.instagramUserId,
     limit,
   });
 

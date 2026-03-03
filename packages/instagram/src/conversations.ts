@@ -18,12 +18,16 @@ const REQUEST_DELAY_MS = 200;
 
 export async function fetchConversations(params: {
   accessToken: string;
+  igUserId?: string;
 }): Promise<InstagramConversationsResponse> {
   const { accessToken } = params;
+  const conversationsPath = params.igUserId
+    ? `/${IG_API_VERSION}/${encodeURIComponent(params.igUserId)}/conversations`
+    : `/${IG_API_VERSION}/me/conversations`;
   try {
     const res = await instagramRequest<{ data?: unknown }>({
       method: "GET",
-      url: graphUrl(`/${IG_API_VERSION}/me/conversations`),
+      url: graphUrl(conversationsPath),
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -98,11 +102,15 @@ export async function fetchConversationMessagesForSync(params: {
 
 export async function fetchConversationsForSync(params: {
   accessToken: string;
+  igUserId?: string;
 }): Promise<InstagramConversation[]> {
   const { accessToken } = params;
+  const conversationsPath = params.igUserId
+    ? `/${IG_API_VERSION}/${encodeURIComponent(params.igUserId)}/conversations`
+    : `/${IG_API_VERSION}/me/conversations`;
   const res = await instagramRequest<{ data?: unknown }>({
     method: "GET",
-    url: graphUrl(`/${IG_API_VERSION}/me/conversations`),
+    url: graphUrl(conversationsPath),
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

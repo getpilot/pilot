@@ -1,5 +1,5 @@
 import { automation, contact, instagramIntegration, sidekickActionLog } from "@pilot/db/schema";
-import { and, desc, eq, gt } from "drizzle-orm";
+import { and, desc, eq, gt, or } from "drizzle-orm";
 import {
   postPublicCommentReply,
   sendInstagramCommentGenericTemplate,
@@ -160,7 +160,10 @@ async function processCommentChanges(params: {
     }
 
     const integration = await params.dbClient.query.instagramIntegration.findFirst({
-      where: eq(instagramIntegration.instagramUserId, params.igUserId),
+      where: or(
+        eq(instagramIntegration.instagramUserId, params.igUserId),
+        eq(instagramIntegration.appScopedUserId, params.igUserId),
+      ),
     });
     if (!integration) {
       continue;
@@ -199,7 +202,7 @@ async function processCommentChanges(params: {
         if (elements.length > 0) {
           const normalized = normalizeTemplateElements(elements);
           sendResponse = await sendInstagramCommentGenericTemplate({
-            igUserId: params.igUserId,
+            igUserId: integration.instagramUserId || params.igUserId,
             commentId,
             accessToken: integration.accessToken,
             elements: normalized,
@@ -212,7 +215,7 @@ async function processCommentChanges(params: {
 
     if (!sendResponse && replyText) {
       sendResponse = await sendInstagramCommentReply({
-        igUserId: params.igUserId,
+        igUserId: integration.instagramUserId || params.igUserId,
         commentId,
         accessToken: integration.accessToken,
         text: replyText,
@@ -258,7 +261,10 @@ async function processDirectMessage(params: {
   webhookMid?: string | null;
 }) {
   const integration = await params.dbClient.query.instagramIntegration.findFirst({
-    where: eq(instagramIntegration.instagramUserId, params.igUserId),
+    where: or(
+      eq(instagramIntegration.instagramUserId, params.igUserId),
+      eq(instagramIntegration.appScopedUserId, params.igUserId),
+    ),
   });
 
   if (!integration) {
@@ -380,6 +386,7 @@ async function processDirectMessage(params: {
       senderId: params.senderId,
       text: params.messageText,
       accessToken: integration.accessToken,
+      igUserId: integration.instagramUserId || params.igUserId,
     });
 
     if (!reply) {
