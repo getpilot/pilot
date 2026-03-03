@@ -1,8 +1,13 @@
 "use client";
 
 import { Button } from "@pilot/ui/components/button";
-import { Check } from "lucide-react";
-import { Card, CardHeader, CardTitle } from "@pilot/ui/components/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@pilot/ui/components/card";
+import { ArrowRight, Check } from "lucide-react";
 import {
   type PaidPlanId,
   formatPlanPrice,
@@ -14,35 +19,38 @@ import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { handleCheckout } from "@/lib/polar/client";
 import PlanBadge from "@/components/subscription-badge";
+
 export default function UpgradePage() {
   const [isYearly, setIsYearly] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const showYearlyToggle = hasAnyYearlyPricing();
 
   return (
-    <div className="relative my-auto">
-      <div className="mx-auto max-w-360 px-6">
+    <section className="bg-background @container">
+      <div className="mx-auto max-w-7xl px-6 py-10 md:py-16 lg:py-24">
         <PlanBadge />
 
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-balance text-3xl font-bold font-heading md:text-4xl lg:text-5xl mt-3">
+          <h2 className="mt-3 text-balance font-heading text-3xl font-bold md:text-4xl lg:text-5xl">
             Pick a plan that fits your volume
           </h2>
-          <p className="text-muted-foreground mx-auto mt-4 max-w-xl text-balance text-lg">
-            Start simple, then upgrade when you need more power. No setup fee.
+          <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-balance text-base md:text-lg">
+            Start simple, then upgrade when you need more capacity. Limits are
+            enforced by tier, and you can update the quota values in code
+            whenever you want.
           </p>
         </div>
 
         {showYearlyToggle && (
           <div className="mt-10 flex items-center justify-center">
             <div
-              className="relative flex w-[260px] items-center justify-between rounded-full border bg-muted"
+              className="relative flex w-65 items-center justify-between rounded-full border bg-muted"
               role="radiogroup"
               aria-label="Billing frequency"
             >
               <button
                 onClick={() => setIsYearly(false)}
-                className="relative z-10 w-[130px] py-3 px-6 text-center text-sm font-medium"
+                className="relative z-10 w-65 py-3 px-6 text-center text-sm font-medium"
                 role="radio"
                 aria-checked={!isYearly}
                 aria-label="Monthly billing"
@@ -51,7 +59,7 @@ export default function UpgradePage() {
               </button>
               <button
                 onClick={() => setIsYearly(true)}
-                className="relative z-10 w-[130px] py-3 px-6 text-center text-sm font-medium"
+                className="relative z-10 w-65 py-3 px-6 text-center text-sm font-medium"
                 role="radio"
                 aria-checked={isYearly}
                 aria-label="Yearly billing"
@@ -73,85 +81,94 @@ export default function UpgradePage() {
           </div>
         )}
 
-        <div className="@container relative mt-10">
-          <Card className="@4xl:max-w-full relative mx-auto max-w-sm p-0 border-l-0">
-            <div className="@4xl:grid-cols-4 grid">
-              {pricingPlans.map((plan) => (
-                <div
-                  key={plan.title}
-                  className={
-                    plan.highlighted
-                      ? "ring-foreground/10 bg-background rounded-(--radius) @3xl:mx-0 @3xl:-my-3 -mx-1 border-transparent shadow ring-1"
-                      : ""
-                  }
-                >
-                  <div
-                    className={
-                      plan.highlighted
-                        ? "@3xl:py-3 @3xl:px-0 relative px-1"
-                        : ""
-                    }
-                  >
-                    <CardHeader className="p-8">
-                      <CardTitle className="font-medium text-lg">
-                        {plan.title}
-                      </CardTitle>
-                      <p className="text-muted-foreground mt-2 text-base">
-                        {plan.description}
-                      </p>
-                      <span className="mb-0.5 mt-4 block text-3xl font-semibold">
-                        {formatPlanPrice(plan, isYearly)}
-                        <span className="text-muted-foreground text-base font-normal ml-1">
-                          / month
-                        </span>
-                      </span>
-                      {showYearlyToggle && isYearly && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Billed annually
-                        </p>
-                      )}
-                    </CardHeader>
-                    <div
-                      className={`${plan.highlighted ? "@3xl:mx-0 -mx-1 " : ""
-                        }border-y px-8 py-4`}
-                    >
-                      {isPaidPlanId(plan.planId) ? (
-                        <Button
-                          className="w-full"
-                          onClick={async () => {
-                            await handleCheckout(
-                              plan.planId as PaidPlanId,
-                              isYearly
-                            );
-                          }}
-                        >
-                          Subscribe
-                        </Button>
-                      ) : (
-                        <Button className="w-full" variant="outline" disabled>
-                          Current free tier
-                        </Button>
-                      )}
-                    </div>
+        <div className="@xl:grid-cols-2 @4xl:grid-cols-4 mt-12 grid gap-4">
+          {pricingPlans.map((plan) => {
+            const isBestValue = plan.planId === "growth";
 
-                    <ul role="list" className="space-y-3 p-8">
-                      {plan.features.map((feature, index) => (
-                        <li key={index} className="flex items-center gap-2">
-                          <Check
-                            className="text-primary size-3"
-                            strokeWidth={3.5}
-                          />
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
+            return (
+              <Card
+                key={plan.planId}
+                className={[
+                  "relative flex h-full flex-col border p-0",
+                  isBestValue
+                    ? "border-primary shadow-lg ring-1 ring-primary/20"
+                    : "bg-card",
+                ].join(" ")}
+              >
+                <CardHeader className="px-6 pt-6 pb-0">
+                  <div className="flex items-center justify-between gap-3">
+                    <CardTitle className="text-lg font-medium">
+                      {plan.title}
+                    </CardTitle>
+                    {isBestValue ? (
+                      <span className="rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground">
+                        Best Value
+                      </span>
+                    ) : null}
                   </div>
-                </div>
-              ))}
-            </div>
-          </Card>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    {plan.description}
+                  </p>
+                  <div className="mt-5">
+                    <span className="text-4xl font-semibold md:text-5xl">
+                      {formatPlanPrice(plan, isYearly)}
+                    </span>
+                    <span className="text-muted-foreground ml-1 text-sm">
+                      / month
+                    </span>
+                  </div>
+                  {showYearlyToggle && isYearly ? (
+                    <p className="text-muted-foreground mt-1 text-xs">
+                      Billed annually
+                    </p>
+                  ) : null}
+                </CardHeader>
+
+                <CardContent className="flex flex-1 flex-col px-6 pt-6 pb-6">
+                  <ul role="list" className="space-y-3">
+                    {plan.features.map((feature) => (
+                      <li
+                        key={feature}
+                        className="text-muted-foreground flex items-center gap-2 text-sm"
+                      >
+                        <Check className="text-primary size-4" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-auto pt-8">
+                    {isPaidPlanId(plan.planId) ? (
+                      <Button
+                        className="w-full gap-2"
+                        variant={isBestValue ? "default" : "outline"}
+                        onClick={async () => {
+                          await handleCheckout(
+                            plan.planId as PaidPlanId,
+                            isYearly,
+                          );
+                        }}
+                      >
+                        Subscribe
+                        <ArrowRight className="size-4" />
+                      </Button>
+                    ) : (
+                      <Button className="w-full" variant="outline" disabled>
+                        Current free tier
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
+
+        <p className="text-muted-foreground mt-8 text-center text-sm">
+          No free trials. Free access stays on the built-in free tier until you
+          subscribe.
+        </p>
       </div>
-    </div>
+    </section>
   );
 }
