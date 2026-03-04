@@ -600,7 +600,15 @@ export async function syncInstagramContacts(fullSync?: boolean) {
   }
 
   try {
-    await assertBillingAllowed(user.id, "contact:mutate");
+    const db = await getRLSDb();
+    const integration = await db.query.instagramIntegration.findFirst({
+      where: eq(instagramIntegration.userId, user.id),
+    });
+
+    if (!integration) {
+      return { success: false, error: "Instagram is not connected" };
+    }
+
     console.log("Triggering contact sync for user:", user.id);
     await inngest.send({
       name: "contacts/sync",
