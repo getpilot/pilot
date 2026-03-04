@@ -1,5 +1,5 @@
 import { contact, instagramIntegration, sidekickSetting } from "@pilot/db/schema";
-import { and, eq, inArray, lt } from "drizzle-orm";
+import { and, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import {
   fetchConversationMessagesForSync,
   fetchConversationsForSync,
@@ -24,6 +24,8 @@ const MIN_MESSAGES_PER_CONTACT = 2;
 const DEFAULT_MESSAGE_LIMIT = 10;
 const BATCH_SIZE = 20;
 const REQUEST_DELAY_MS = 200;
+const EXISTING_CONTACT_WRITE_BATCH_SIZE = 10;
+const NEW_CONTACT_WRITE_BATCH_SIZE = 10;
 
 type IntegrationRecord = {
   id: string;
@@ -50,6 +52,90 @@ type BillingSyncSnapshot = {
     isStructurallyFrozen: boolean;
   };
 };
+
+function getStartOfUtcMonth(now: Date = new Date()) {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+}
+
+async function countContactsForUser(params: {
+  dbClient: any;
+  userId: string;
+  createdAfter?: Date;
+}) {
+  const conditions = [eq(contact.userId, params.userId)];
+
+  if (params.createdAfter) {
+    conditions.push(gte(contact.createdAt, params.createdAfter));
+  }
+
+  const [row] = await params.dbClient
+    .select({
+      count: sql<number>`count(*)::int`,
+    })
+    .from(contact)
+    .where(and(...conditions));
+
+  return row?.count ?? 0;
+}
+
+async function upsertContactRecord(params: {
+  dbClient: any;
+  row: {
+    id: string;
+    userId: string;
+    username: string | null | undefined;
+    lastMessage: string | null;
+    lastMessageAt: Date;
+    stage: AnalysisResult["stage"];
+    sentiment: AnalysisResult["sentiment"];
+    leadScore: number;
+    nextAction: string;
+    leadValue: number;
+    triggerMatched: boolean;
+    followupNeeded: boolean;
+    notes: string | null;
+    updatedAt: Date;
+    createdAt: Date;
+  };
+  fullSync: boolean;
+}) {
+  await params.dbClient
+    .insert(contact)
+    .values(params.row)
+    .onConflictDoUpdate({
+      target: contact.id,
+      set: params.fullSync
+        ? {
+            username: params.row.username,
+            lastMessage: params.row.lastMessage,
+            lastMessageAt: params.row.lastMessageAt,
+            stage: params.row.stage,
+            sentiment: params.row.sentiment,
+            leadScore: params.row.leadScore,
+            nextAction: params.row.nextAction,
+            leadValue: params.row.leadValue,
+            followupNeeded: params.row.followupNeeded,
+            updatedAt: new Date(),
+          }
+        : {
+            lastMessage: params.row.lastMessage,
+            lastMessageAt: params.row.lastMessageAt,
+            followupNeeded: params.row.followupNeeded,
+            updatedAt: new Date(),
+          },
+    });
+}
+
+async function processInChunks<T>(
+  items: T[],
+  chunkSize: number,
+  processor: (item: T) => Promise<void>,
+) {
+  for (let index = 0; index < items.length; index += chunkSize) {
+    const chunk = items.slice(index, index + chunkSize);
+    await Promise.all(chunk.map((item) => processor(item)));
+  }
+}
 
 async function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -288,14 +374,18 @@ async function storeContacts(params: {
     return [];
   }
 
-  const contacts: InstagramContact[] = [];
+  const storedContacts: InstagramContact[] = [];
   const now = new Date();
+  const monthStart = getStartOfUtcMonth(now);
   const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-  let contactsTotal = params.billing?.usage.contactsTotal ?? 0;
-  let newContactsThisMonth = params.billing?.usage.newContactsThisMonth ?? 0;
-
-  const hasReachedLimit = (current: number, limit: number | null | undefined) =>
-    limit !== null && limit !== undefined && current >= limit;
+  const existingContactItems: Array<{
+    contactPayload: InstagramContact;
+    row: Parameters<typeof upsertContactRecord>[0]["row"];
+  }> = [];
+  const newContactItems: Array<{
+    contactPayload: InstagramContact;
+    row: Parameters<typeof upsertContactRecord>[0]["row"];
+  }> = [];
 
   for (const item of params.contactsData) {
     const existingContact = params.existingContactsMap.get(item.participant.id);
@@ -333,51 +423,132 @@ async function storeContacts(params: {
       createdAt: existingContact?.createdAt || new Date(),
     };
 
-    if (!isExistingContact) {
-      const totalLimit = params.billing?.limits.maxContactsTotal;
-      const monthlyLimit = params.billing?.limits.maxNewContactsPerMonth;
-
-      if (
-        hasReachedLimit(contactsTotal, totalLimit) ||
-        hasReachedLimit(newContactsThisMonth, monthlyLimit)
-      ) {
-        continue;
-      }
-
-      contactsTotal += 1;
-      newContactsThisMonth += 1;
+    if (isExistingContact) {
+      existingContactItems.push({
+        contactPayload,
+        row,
+      });
+      continue;
     }
 
-    contacts.push(contactPayload);
-
-    await params.dbClient
-      .insert(contact)
-      .values(row)
-      .onConflictDoUpdate({
-        target: contact.id,
-        set: params.fullSync
-          ? {
-              username: row.username,
-              lastMessage: row.lastMessage,
-              lastMessageAt: row.lastMessageAt,
-              stage: row.stage,
-              sentiment: row.sentiment,
-              leadScore: row.leadScore,
-              nextAction: row.nextAction,
-              leadValue: row.leadValue,
-              followupNeeded: row.followupNeeded,
-              updatedAt: new Date(),
-            }
-          : {
-              lastMessage: row.lastMessage,
-              lastMessageAt: row.lastMessageAt,
-              followupNeeded: row.followupNeeded,
-              updatedAt: new Date(),
-            },
+    if (!params.billing) {
+      newContactItems.push({
+        contactPayload,
+        row,
       });
+      continue;
+    }
+
+    newContactItems.push({
+      contactPayload,
+      row,
+    });
   }
 
-  return contacts;
+  await processInChunks(
+    existingContactItems,
+    EXISTING_CONTACT_WRITE_BATCH_SIZE,
+    async (item) => {
+      await upsertContactRecord({
+        dbClient: params.dbClient,
+        row: item.row,
+        fullSync: params.fullSync,
+      });
+    },
+  );
+
+  storedContacts.push(...existingContactItems.map((item) => item.contactPayload));
+
+  if (!params.billing) {
+    await processInChunks(
+      newContactItems,
+      NEW_CONTACT_WRITE_BATCH_SIZE,
+      async (item) => {
+        await upsertContactRecord({
+          dbClient: params.dbClient,
+          row: item.row,
+          fullSync: params.fullSync,
+        });
+      },
+    );
+
+    storedContacts.push(...newContactItems.map((item) => item.contactPayload));
+    return storedContacts;
+  }
+
+  const billing = params.billing;
+
+  for (let index = 0; index < newContactItems.length; index += NEW_CONTACT_WRITE_BATCH_SIZE) {
+    const chunk = newContactItems.slice(index, index + NEW_CONTACT_WRITE_BATCH_SIZE);
+
+    const storedChunk = await params.dbClient.transaction(async (tx: any) => {
+      if (chunk.length === 0) {
+        return [] as InstagramContact[];
+      }
+
+      await tx.execute(
+        sql`select pg_advisory_xact_lock(hashtext('contact_limit'), hashtext(${params.userId}))`,
+      );
+
+      const chunkIds = chunk.map((item) => item.row.id);
+      const existingRows = await tx.query.contact.findMany({
+        where: and(eq(contact.userId, params.userId), inArray(contact.id, chunkIds)),
+        columns: { id: true },
+      });
+
+      const existingIds = new Set(existingRows.map((row: { id: string }) => row.id));
+      const [contactsTotal, newContactsThisMonth] = await Promise.all([
+        countContactsForUser({
+          dbClient: tx,
+          userId: params.userId,
+        }),
+        countContactsForUser({
+          dbClient: tx,
+          userId: params.userId,
+          createdAfter: monthStart,
+        }),
+      ]);
+
+      const totalLimit = billing.limits.maxContactsTotal ?? null;
+      const monthlyLimit = billing.limits.maxNewContactsPerMonth ?? null;
+      let remainingTotal =
+        totalLimit === null ? Number.POSITIVE_INFINITY : Math.max(0, totalLimit - contactsTotal);
+      let remainingMonthly =
+        monthlyLimit === null
+          ? Number.POSITIVE_INFINITY
+          : Math.max(0, monthlyLimit - newContactsThisMonth);
+
+      const allowedItems = chunk.filter((item) => {
+        if (existingIds.has(item.row.id)) {
+          return true;
+        }
+
+        if (remainingTotal <= 0 || remainingMonthly <= 0) {
+          return false;
+        }
+
+        remainingTotal -= 1;
+        remainingMonthly -= 1;
+        return true;
+      });
+
+      await Promise.all(
+        allowedItems.map((item) =>
+          upsertContactRecord({
+            dbClient: tx,
+            row: item.row,
+            fullSync: params.fullSync,
+          }),
+        ),
+      );
+
+      return allowedItems.map((item) => item.contactPayload);
+    });
+
+    storedContacts.push(...storedChunk);
+  }
+
+  return storedContacts;
 }
 
 export async function fetchAndStoreInstagramContacts(params: {
