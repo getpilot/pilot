@@ -20,7 +20,10 @@ import {
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { handleCheckout } from "@/lib/polar/client";
-import PlanBadge, { getSubscriptionData } from "@/components/subscription-badge";
+import PlanBadge, {
+  getSubscriptionData,
+} from "@/components/subscription-badge";
+import Link from "next/link";
 
 export default function UpgradePage() {
   const [isYearly, setIsYearly] = useState(false);
@@ -50,7 +53,7 @@ export default function UpgradePage() {
 
   return (
     <section className="bg-background @container">
-      <div className="mx-auto max-w-7xl px-6 py-10 md:py-16 lg:py-24">
+      <div className="mx-auto max-w-[110rem] px-6 py-10 md:py-16 lg:py-24">
         <PlanBadge />
 
         <div className="mx-auto max-w-2xl text-center">
@@ -97,14 +100,18 @@ export default function UpgradePage() {
                 className="absolute z-0 rounded-full bg-primary"
                 initial={false}
                 animate={{ x: isYearly ? 120 : 0 }}
-                transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
+                transition={
+                  shouldReduceMotion
+                    ? { duration: 0 }
+                    : { type: "spring", stiffness: 300, damping: 30 }
+                }
                 style={{ width: isYearly ? 180 : 120, height: "100%" }}
               />
             </div>
           </div>
         )}
 
-        <div className="@xl:grid-cols-2 @4xl:grid-cols-4 mt-12 grid gap-4">
+        <div className="@xl:grid-cols-2 @5xl:grid-cols-3 @7xl:grid-cols-5 mt-12 grid gap-4">
           {pricingPlans.map((plan) => {
             const isBestValue = plan.planId === "growth";
             const checkoutConfig = isPaidPlanId(plan.planId)
@@ -189,7 +196,11 @@ export default function UpgradePage() {
                         <ArrowRight className="size-4" />
                       </Button>
                     ) : (
-                      <Button className="w-full gap-2" variant="outline" disabled>
+                      <Button
+                        className="w-full gap-2"
+                        variant="outline"
+                        disabled
+                      >
                         Start on free
                       </Button>
                     )}
@@ -198,11 +209,75 @@ export default function UpgradePage() {
               </Card>
             );
           })}
+
+          <Card className="relative flex h-full flex-col border p-0 bg-card">
+            <CardHeader className="px-6 pt-6 pb-0">
+              <div className="flex items-center justify-between gap-3">
+                <CardTitle className="text-lg font-medium">
+                  Enterprise
+                </CardTitle>
+              </div>
+              <p className="text-muted-foreground mt-1 text-sm">
+                For teams that need custom infrastructure and support.
+              </p>
+              <div className="mt-5">
+                <span className="text-4xl font-semibold md:text-5xl">
+                  Custom
+                </span>
+              </div>
+            </CardHeader>
+
+            <CardContent className="flex flex-1 flex-col px-6 pt-6 pb-6">
+              <ul role="list" className="space-y-3">
+                {[
+                  "Unlimited contacts",
+                  "Dedicated infrastructure",
+                  "SLA",
+                  "Custom integrations",
+                  "Self-host support",
+                ].map((feature) => (
+                  <li
+                    key={feature}
+                    className="text-muted-foreground flex items-center gap-2 text-sm"
+                  >
+                    <Check className="text-primary size-4" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-auto pt-8">
+                <p className="text-muted-foreground mb-4 text-center text-sm">
+                  Contact
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button className="w-full gap-2" variant="outline" asChild>
+                    <Link
+                      href="https://www.instagram.com/pilot.ops/"
+                      target="_blank"
+                    >
+                      Instagram
+                      <ArrowRight className="size-4" />
+                    </Link>
+                  </Button>
+                  <Button className="w-full gap-2" variant="outline" asChild>
+                    <Link
+                      href="https://x.com/PilotOps_"
+                      target="_blank"
+                    >
+                      X
+                      <ArrowRight className="size-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <p className="text-muted-foreground mt-8 text-center text-sm">
-          No free trials. You stay on the built-in Free tier until you decide
-          to upgrade.
+          No free trials. You stay on the built-in Free tier until you decide to
+          upgrade.
         </p>
       </div>
     </section>
