@@ -1,0 +1,1 @@
+ALTER TABLE "billing_usage_event" ADD CONSTRAINT "billing_usage_event_kind_check" CHECK ("billing_usage_event"."kind" = 'sidekick_chat_prompt');

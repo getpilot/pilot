@@ -6,6 +6,7 @@ import {
   integer,
   unique,
   pgPolicy,
+  check,
 } from "drizzle-orm/pg-core";
 import { authenticatedRole } from "drizzle-orm/neon";
 import { sql } from "drizzle-orm";
@@ -341,7 +342,11 @@ export const billingUsageEvent = pgTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  (_table) => [
+  (table) => [
+    check(
+      "billing_usage_event_kind_check",
+      sql`${table.kind} = 'sidekick_chat_prompt'`,
+    ),
     pgPolicy("user_billing_usage_events_policy", {
       for: "all",
       to: authenticatedRole,
