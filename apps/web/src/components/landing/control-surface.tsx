@@ -1,4 +1,4 @@
-import RotaryDial from "@/components/landing/rotary-dial";
+import Image from "next/image";
 
 const ControlSurface = () => {
   return (
@@ -95,7 +95,12 @@ const ControlSurface = () => {
 
         <div className="sm:my-12 md:my-16 lg:my-20 py-14 flex w-full items-center justify-center">
           <div className="scale-[120%] md:scale-[185%] lg:scale-[250%]">
-            <RotaryDial />
+            <Image
+              src="/rotary-dial.svg"
+              width={230}
+              height={200}
+              alt="Pilot control dial"
+            />
           </div>
         </div>
       </div>

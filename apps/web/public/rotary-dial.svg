@@ -1,64 +1,62 @@
-const RotaryDial = () => {
-  return (
-    <svg
+<svg
       width="230"
       height="200"
       viewBox="0 0 230 200"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g clipPath="url(#clip0_1_3)">
+      <g clip-path="url(#clip0_1_3)">
         <path
           d="M57.4022 125.85C89.1046 144.154 140.504 144.154 172.207 125.85C203.909 107.547 203.909 77.8711 172.207 59.5677C140.504 41.2643 89.1046 41.2643 57.4022 59.5677C25.6999 77.8711 25.6999 107.547 57.4022 125.85Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M60.7785 123.901C90.6162 141.128 138.993 141.128 168.83 123.901C198.668 106.674 198.668 78.7439 168.83 61.517C138.993 44.2902 90.6162 44.2902 60.7785 61.517C30.9408 78.7439 30.9408 106.674 60.7785 123.901Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
-          strokeDasharray="3.98 3.98"
+          stroke-width="0.662824"
+          stroke-dasharray="3.98 3.98"
         />
         <path
           d="M92.9915 108.392C104.958 115.3 124.359 115.3 136.326 108.392C148.292 101.483 148.292 90.2813 136.326 83.3725C124.359 76.4636 104.958 76.4636 92.9915 83.3725C81.025 90.2813 81.025 101.483 92.9915 108.392Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M97.906 104.991C107.317 110.425 122.576 110.425 131.988 104.991C141.399 99.5577 141.399 90.7479 131.988 85.3141C122.576 79.8804 107.317 79.8804 97.906 85.3141C88.4945 90.7479 88.4945 99.5577 97.906 104.991Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
-          strokeDasharray="2.65 2.65"
+          stroke-width="0.662824"
+          stroke-dasharray="2.65 2.65"
         />
         <path
           d="M33.6254 92.7089C33.6254 105.651 42.7117 117.369 57.4022 125.85V152.363C42.7117 143.882 33.6254 132.164 33.6254 119.222V92.7089Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M57.4022 125.85C89.1048 144.153 140.504 144.153 172.207 125.85V152.363C140.504 170.666 89.1048 170.666 57.4022 152.363V125.85Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M195.984 92.7089C195.984 105.651 186.897 117.369 172.207 125.85V152.363C186.897 143.882 195.984 132.164 195.984 119.222V92.7089Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M63.9353 63.3397C92.0292 47.1196 137.579 47.1196 165.673 63.3397C193.767 79.5598 193.767 105.858 165.673 122.078C137.579 138.298 92.0292 138.298 63.9353 122.078C35.8413 105.858 35.8413 79.5598 63.9353 63.3397ZM137.315 79.7129C124.883 72.5353 104.726 72.5353 92.2936 79.7129C79.8617 86.8905 79.8617 98.5279 92.2936 105.706C104.726 112.883 124.883 112.883 137.315 105.706C149.747 98.5279 149.747 86.8905 137.315 79.7129Z"
           fill="black"
         />
         <path
-          fillRule="evenodd"
-          clipRule="evenodd"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
           d="M63.9353 63.3397L64.101 63.6267C78.086 55.5526 96.4363 51.5061 114.804 51.5061C133.172 51.5061 151.522 55.5526 165.507 63.6267L165.673 63.3397L165.839 63.0527C151.73 54.9067 133.257 50.8432 114.804 50.8432C96.3508 50.8432 77.8792 54.9067 63.7696 63.0527L63.9353 63.3397ZM165.673 63.3397L165.507 63.6267C179.494 71.7019 186.412 82.2394 186.412 92.7089C186.412 103.178 179.494 113.716 165.507 121.791L165.673 122.078L165.839 122.365C179.946 114.22 187.075 103.498 187.075 92.7089C187.075 81.9191 179.946 71.1976 165.839 63.0527L165.673 63.3397ZM165.673 122.078L165.507 121.791C151.522 129.865 133.172 133.911 114.804 133.911C96.4363 133.911 78.086 129.865 64.101 121.791L63.9353 122.078L63.7696 122.365C77.8792 130.511 96.3508 134.574 114.804 134.574C133.257 134.574 151.73 130.511 165.839 122.365L165.673 122.078ZM63.9353 122.078L64.101 121.791C50.1144 113.716 43.1962 103.178 43.1962 92.7089C43.1962 82.2394 50.1143 71.7019 64.101 63.6267L63.9353 63.3397L63.7696 63.0527C49.6622 71.1976 42.5334 81.9191 42.5334 92.7089C42.5334 103.498 49.6622 114.22 63.7696 122.365L63.9353 122.078ZM137.315 79.7129L137.48 79.4259C131.202 75.8011 122.994 73.9983 114.804 73.9983C106.614 73.9983 98.4062 75.8011 92.1279 79.4259L92.2936 79.7129L92.4593 79.9999C98.613 76.447 106.699 74.6611 114.804 74.6611C122.909 74.6611 130.995 76.447 137.149 79.9999L137.315 79.7129ZM92.2936 79.7129L92.1279 79.4259C85.8516 83.0496 82.6383 87.8453 82.6383 92.7089C82.6383 97.5727 85.8516 102.369 92.1279 105.993L92.2936 105.706L92.4593 105.419C86.3037 101.865 83.3011 97.2526 83.3011 92.7089C83.3011 88.1656 86.3037 83.5539 92.4593 79.9999L92.2936 79.7129ZM92.2936 105.706L92.1279 105.993C98.4062 109.617 106.614 111.42 114.804 111.42C122.994 111.42 131.202 109.617 137.48 105.993L137.315 105.706L137.149 105.419C130.995 108.971 122.909 110.757 114.804 110.757C106.699 110.757 98.613 108.971 92.4593 105.419L92.2936 105.706ZM137.315 105.706L137.48 105.993C143.757 102.369 146.97 97.5727 146.97 92.7089C146.97 87.8453 143.757 83.0496 137.48 79.4259L137.315 79.7129L137.149 79.9999C143.305 83.5539 146.307 88.1656 146.307 92.7089C146.307 97.2526 143.305 101.865 137.149 105.419L137.315 105.706Z"
           fill="white"
         />
@@ -66,13 +64,13 @@ const RotaryDial = () => {
           d="M63.6715 116.143C68.8188 119.115 77.1642 119.115 82.3115 116.143C87.4588 113.171 87.4588 108.353 82.3115 105.381C77.1642 102.409 68.8188 102.409 63.6715 105.381C58.5242 108.353 58.5242 113.171 63.6715 116.143Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
-          strokeDasharray="2.65 2.65"
+          stroke-width="0.662824"
+          stroke-dasharray="2.65 2.65"
         />
         <path
           d="M108.343 51.6138L110.341 73.9076V78.4582M61.3843 64.9235L89.6927 80.8952V85.7493M44.7406 100.663L82.853 95.0288M80.5331 128.833L96.7723 108.285M121.997 134.467L117.651 111.268M175.283 115.834L140.98 102.856M182.277 79.2315L145.49 87.7378L145.159 93.7032M150.638 57.2704L132.321 77.4208V81.4409"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <mask
           id="mask0_1_3"
@@ -91,23 +89,23 @@ const RotaryDial = () => {
           <path
             d="M123.361 63.9314C123.731 64.145 124.33 64.145 124.7 63.9314C125.07 63.7179 125.07 63.3717 124.7 63.1581C124.33 62.9446 123.731 62.9446 123.361 63.1581C122.991 63.3717 122.991 63.7179 123.361 63.9314Z"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M124.03 67.4234C125.697 67.4258 127.052 65.6882 127.06 63.5464C127.052 61.4046 125.697 59.667 124.03 59.6694C122.364 59.667 121.008 61.4046 121.001 63.5464C121.008 65.6882 122.364 67.4258 124.03 67.4234Z"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M124.03 65.2958C127.74 65.2911 130.749 64.5085 130.745 63.5464C130.749 62.5842 127.74 61.8018 124.03 61.797C120.32 61.8018 117.311 62.5842 117.315 63.5464C117.311 64.5085 120.32 65.2911 124.03 65.2958Z"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
         </g>
         <mask
@@ -127,44 +125,44 @@ const RotaryDial = () => {
           <path
             d="M149.19 72.4928L148.186 73.0728"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M151.869 72.4928L148.186 74.6193"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M154.213 72.686L148.186 76.1658"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M153.878 74.4259L151.534 75.7792"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M156.222 74.6195L151.869 77.1327"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M155.888 76.3594L154.883 76.9394"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
         </g>
         <mask
@@ -184,16 +182,16 @@ const RotaryDial = () => {
           <path
             d="M138.257 118.753C139.552 119.5 141.65 119.5 142.945 118.753C144.239 118.005 144.239 116.793 142.945 116.046C141.65 115.299 139.552 115.299 138.257 116.046C136.963 116.793 136.963 118.005 138.257 118.753Z"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M138.257 121.073C139.552 121.82 141.65 121.82 142.945 121.073C144.239 120.325 144.239 119.113 142.945 118.366C141.65 117.619 139.552 117.619 138.257 118.366C136.963 119.113 136.963 120.325 138.257 121.073Z"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
         </g>
         <mask
@@ -213,58 +211,58 @@ const RotaryDial = () => {
           <path
             d="M101.474 123.696L105.827 121.183"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M104.152 123.31C103.947 123.093 103.869 122.844 103.93 122.6C103.99 122.356 104.185 122.13 104.488 121.956C104.185 122.13 103.794 122.243 103.371 122.278C102.949 122.313 102.518 122.268 102.143 122.15"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M107.199 122.555C107.409 122.523 107.604 122.462 107.768 122.38C107.932 122.297 108.06 122.193 108.144 122.077C108.227 121.961 108.263 121.835 108.248 121.709C108.235 121.584 108.17 121.462 108.062 121.353C107.952 121.244 107.802 121.151 107.62 121.081C107.439 121.011 107.232 120.966 107.016 120.95C106.8 120.933 106.581 120.946 106.375 120.986C106.168 121.027 105.98 121.094 105.827 121.183C105.98 121.094 106.097 120.986 106.167 120.866C106.237 120.748 106.259 120.62 106.231 120.496C106.202 120.371 106.124 120.252 106.003 120.147C105.882 120.042 105.721 119.956 105.532 119.893C105.343 119.83 105.133 119.793 104.915 119.785C104.698 119.776 104.48 119.797 104.278 119.845C104.077 119.893 103.898 119.968 103.754 120.062C103.61 120.156 103.506 120.269 103.45 120.39"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M107.793 122.366C107.94 122.51 108.027 122.669 108.05 122.835C108.073 123 108.031 123.166 107.926 123.321C107.822 123.476 107.658 123.614 107.446 123.727C107.235 123.839 106.982 123.923 106.707 123.97"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M103.483 124.856C103.778 125.026 104.162 125.136 104.575 125.167C104.988 125.199 105.408 125.15 105.769 125.03C106.13 124.91 106.412 124.724 106.572 124.501C106.731 124.279 106.76 124.032 106.652 123.8"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M104.315 125.136C104.156 125.255 103.958 125.353 103.731 125.425C103.505 125.498 103.255 125.543 102.997 125.557C102.74 125.572 102.479 125.555 102.233 125.509C101.987 125.464 101.759 125.389 101.565 125.29C101.37 125.192 101.213 125.071 101.102 124.936C100.991 124.801 100.93 124.654 100.921 124.505C100.913 124.355 100.957 124.206 101.052 124.067C101.148 123.928 101.291 123.802 101.474 123.696C101.29 123.802 101.071 123.884 100.831 123.939C100.59 123.994 100.332 124.02 100.073 124.015C99.8147 124.01 99.5602 123.974 99.3262 123.911C99.0922 123.847 98.8834 123.756 98.7124 123.644C98.5414 123.532 98.4122 123.4 98.3326 123.258C98.2538 123.115 98.2252 122.966 98.2504 122.816C98.2756 122.668 98.3532 122.523 98.4785 122.393C98.6037 122.262 98.7741 122.147 98.9789 122.056"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M99.4641 122.536C99.1698 122.366 98.9802 122.144 98.9258 121.906C98.8715 121.666 98.955 121.424 99.1631 121.216C99.3719 121.008 99.6934 120.845 100.079 120.752C100.464 120.66 100.891 120.644 101.294 120.707"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M103.776 120.048C103.529 119.963 103.251 119.913 102.965 119.899C102.679 119.886 102.391 119.91 102.123 119.971C101.856 120.031 101.615 120.126 101.42 120.248C101.225 120.37 101.081 120.516 100.999 120.675"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
         </g>
         <mask
@@ -284,30 +282,30 @@ const RotaryDial = () => {
           <path
             d="M161.429 96.3823C160.985 96.6388 160.735 96.9861 160.735 97.3487C160.735 97.7113 160.985 98.0592 161.429 98.3151C161.873 98.5716 162.475 98.7161 163.103 98.7161C163.731 98.7161 164.333 98.5716 164.777 98.3151C165.701 97.7815 165.614 96.8655 164.107 96.7687C163.94 95.8991 162.353 95.8487 161.429 96.3823Z"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M164.777 98.3151C164.333 98.5716 164.083 98.9196 164.083 99.2822C164.083 99.6447 164.333 99.992 164.777 100.249C165.221 100.505 165.823 100.649 166.451 100.649C167.079 100.649 167.681 100.505 168.125 100.249C169.05 99.715 168.963 98.7983 167.456 98.7022C167.288 97.8319 165.701 97.7815 164.777 98.3151Z"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M164.107 96.7687C166.16 96.8284 168.474 95.9064 169.8 95.4152C169.559 96.1967 168.44 98.1103 167.456 98.7022"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M170.804 98.7022C169.368 97.873 169.193 96.8715 169.8 95.4152C171.711 96.5195 171.584 98.2515 170.804 98.7022Z"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
         </g>
         <mask
@@ -327,44 +325,44 @@ const RotaryDial = () => {
           <path
             d="M70.718 83.4017L68.7084 82.2417C68.5234 82.135 68.2238 82.135 68.0389 82.2417L67.3695 82.6284C67.1845 82.7351 67.1845 82.9083 67.3695 83.015L69.3785 84.1749C69.5634 84.2817 69.863 84.2817 70.0479 84.1749L70.718 83.7883C70.903 83.6815 70.903 83.5085 70.718 83.4017Z"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M70.3826 83.9819L71.0528 84.3685C71.2304 84.471 71.3298 84.6101 71.3298 84.7552C71.3298 84.9002 71.2304 85.0393 71.0528 85.1418L66.3646 87.8483C66.187 87.9508 65.9461 88.0085 65.695 88.0085C65.4438 88.0085 65.2029 87.9508 65.0252 87.8483L61.0071 85.5284C60.8295 85.4259 60.7297 85.2868 60.7297 85.1418C60.7297 84.9968 60.8295 84.8577 61.0071 84.7552L65.695 82.0486C65.8725 81.9461 66.1135 81.8885 66.3646 81.8885C66.6158 81.8885 66.8564 81.9461 67.0341 82.0486L67.7042 82.4353"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M66.6993 84.5618L68.0389 85.3351"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M65.0254 85.5282L66.3646 86.3015"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M65.36 83.7883L65.3634 83.7902"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M63.6861 84.755L63.6895 84.757"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
         </g>
         <mask
@@ -384,268 +382,268 @@ const RotaryDial = () => {
           <path
             d="M94.2138 69.1595C94.2158 69.2007 94.2026 69.2417 94.1747 69.2798C94.1475 69.3179 94.1065 69.3522 94.0548 69.3806C94.003 69.409 93.9421 69.4308 93.8745 69.4447C93.8075 69.4586 93.7359 69.4642 93.665 69.4611C92.2598 69.3818 90.9567 69.0036 90.0089 68.4C89.0604 67.7964 88.5354 67.0107 88.5354 66.1959C88.5354 65.381 89.0604 64.5953 90.0089 63.9917C90.9567 63.3882 92.2598 63.01 93.665 62.9306C93.7359 62.9281 93.8075 62.9341 93.8751 62.9483C93.9421 62.9624 94.0037 62.9844 94.0554 63.0129C94.1071 63.0415 94.1482 63.0758 94.176 63.1138C94.2039 63.1519 94.2178 63.1928 94.2171 63.2341L94.2138 69.1595Z"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M94.2138 68.3825C93.2262 68.3674 92.2877 68.1302 91.599 67.7213C90.9103 67.3125 90.5252 66.7645 90.5259 66.1941C90.5265 65.6237 90.9136 65.0761 91.6036 64.668C92.2936 64.2599 93.2328 64.0236 94.2205 64.0095"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M94.2171 66.1961H90.5338"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M91.5884 67.7136L94.2165 66.196L91.5884 64.6784"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
         </g>
         <path
           d="M65.2882 129.827V156.34M50.3746 121.21V147.723M44.4092 115.908V142.421M38.1124 108.285V134.467"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M72.5793 132.478V158.991"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M79.8703 135.13V161.643"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M87.1614 136.455V162.968"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M94.4524 137.781V164.294"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M101.081 139.107V165.62"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M107.709 139.769V166.282"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
-        <path d="M115 139.769V166.282" stroke="white" strokeWidth="0.662824" />
+        <path d="M115 139.769V166.282" stroke="white" stroke-width="0.662824" />
         <path
           d="M122.291 139.769V166.282"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M129.582 139.107V165.62"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M136.873 137.781V164.294"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M144.164 136.455V162.968"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M151.455 134.467V160.98"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M158.746 132.478V158.329"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M166.037 129.827V155.677"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M177.305 122.536V149.049"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M101.676 97.0819C108.776 101.182 120.289 101.182 127.39 97.0819C134.491 92.9822 134.491 86.3354 127.39 82.2358C120.289 78.1361 108.776 78.1361 101.676 82.2358C94.5748 86.3354 94.5748 92.9822 101.676 97.0819Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M104.208 95.6723C110.109 99.0794 119.677 99.0794 125.579 95.6723C131.48 92.2652 131.48 86.7412 125.579 83.334C119.677 79.9269 110.109 79.9269 104.208 83.334C98.3067 86.7412 98.3067 92.2652 104.208 95.6723Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M96.3494 89.6586C96.3494 92.5572 98.385 95.1819 101.675 97.0816V103.02C98.385 101.12 96.3494 98.4961 96.3494 95.5969V89.6586Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M101.675 97.0822C108.776 101.182 120.289 101.182 127.39 97.0822V103.02C120.289 107.12 108.776 107.12 101.675 103.02V97.0822Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M132.715 89.6586C132.715 92.5572 130.68 95.1819 127.39 97.0816V103.02C130.68 101.12 132.715 98.4961 132.715 95.5969V89.6586Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M106.863 99.4923V104.981"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M104.047 98.3356V103.824"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M99.0922 95.3602V101.326"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M109.998 99.4923V105.765"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M113.135 100.276V105.765"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M116.271 100.276V105.765"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M119.407 99.4923V105.765"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M123.328 98.7082V104.981"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M129.923 95.1985V101.471"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M65.6305 111.322C69.6633 113.65 76.2018 113.65 80.2346 111.322C84.2674 108.993 84.2674 105.219 80.2346 102.89C76.2018 100.562 69.6633 100.562 65.6305 102.89C61.5977 105.219 61.5977 108.993 65.6305 111.322Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M67.0688 110.522C70.4204 112.457 75.8543 112.457 79.2059 110.522C82.5574 108.587 82.5574 105.449 79.2059 103.514C75.8543 101.579 70.4204 101.579 67.0688 103.514C63.7173 105.449 63.7173 108.587 67.0688 110.522Z"
           fill="#907D04"
-          fillOpacity="0.51"
+          fill-opacity="0.51"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M62.6058 107.106C62.6058 108.753 63.7616 110.243 65.6304 111.322V114.694C63.7616 113.616 62.6058 112.125 62.6058 110.479V107.106Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M65.6306 111.322C69.6635 113.65 76.2016 113.65 80.2349 111.322V114.695C76.2016 117.023 69.6635 117.023 65.6306 114.695V111.322Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M83.2593 107.106C83.2593 108.753 82.1034 110.243 80.2349 111.322V114.694C82.1034 113.616 83.2593 112.125 83.2593 110.479V107.106Z"
           fill="black"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M68.7196 112.69V115.808"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M67.1209 112.034V115.151"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M64.4493 110.698V113.815"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M70.5006 112.69V116.253"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M72.2823 113.136V116.253"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M74.0627 113.136V116.253"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M75.8443 112.69V116.253"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M78.0714 112.246V115.808"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M81.817 110.252V113.815"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M183.934 117.233V143.746"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <path
           d="M189.899 110.605V137.118"
           stroke="white"
-          strokeWidth="0.662824"
+          stroke-width="0.662824"
         />
         <mask
           id="mask7_1_3"
@@ -668,9 +666,9 @@ const RotaryDial = () => {
           <path
             d="M69.4375 106.897L72.6661 105.033C72.8093 104.951 73.0028 104.905 73.2043 104.905C73.4065 104.905 73.6 104.951 73.7425 105.033L76.4336 106.587C76.4906 106.62 76.5224 106.665 76.5224 106.711C76.5224 106.758 76.4906 106.803 76.4336 106.835L72.5587 109.073C72.5017 109.105 72.4242 109.124 72.3433 109.124C72.2631 109.124 72.1855 109.105 72.1285 109.073L69.4375 107.519C69.295 107.436 69.2148 107.325 69.2148 107.208C69.2148 107.092 69.295 106.98 69.4375 106.897ZM69.4375 106.897C69.58 106.815 69.7735 106.769 69.9757 106.769C70.1772 106.769 70.3714 106.815 70.5139 106.897L73.4197 108.576"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
           <path
             d="M74.4961 105.468L72.7741 106.463H74.0653V107.208L75.7873 106.214"
@@ -679,9 +677,9 @@ const RotaryDial = () => {
           <path
             d="M74.4961 105.468L72.7741 106.463H74.0653V107.208L75.7873 106.214"
             stroke="white"
-            strokeWidth="0.331412"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke-width="0.331412"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
         </g>
         <path
@@ -690,13 +688,8 @@ const RotaryDial = () => {
         />
       </g>
       <defs>
-        <clipPath id="clip0_1_3">
+        <clip-path id="clip0_1_3">
           <rect width="230" height="200" fill="white" />
-        </clipPath>
+        </clip-path>
       </defs>
     </svg>
-  );
-}
-
-export default RotaryDial
-
