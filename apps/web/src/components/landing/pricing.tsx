@@ -99,13 +99,13 @@ const Pricing = () => {
               <m.div
                 className="bg-primary absolute z-0 rounded-full"
                 initial={false}
-                animate={{ x: isYearly ? 120 : 0 }}
+                animate={{ x: isYearly ? 120 : 0, width: isYearly ? 180 : 120 }}
                 transition={
                   shouldReduceMotion
                     ? { duration: 0 }
                     : { type: "spring", stiffness: 300, damping: 30 }
                 }
-                style={{ width: isYearly ? 180 : 120, height: "100%" }}
+                style={{ height: "100%" }}
               />
             </LazyMotion>
           </div>
