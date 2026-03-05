@@ -26,6 +26,7 @@ const sections = {
       { label: "Waitlist", href: "/waitlist" },
       { label: "Open source", href: "/open-source" },
       { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/tos" },
     ],
   },
   resources: {
