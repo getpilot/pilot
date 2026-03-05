@@ -7,6 +7,7 @@
     "./components/*": "./src/components/*.tsx",
     "./hooks/use-mobile": "./src/hooks/use-mobile.ts",
     "./hooks/use-has-primary-touch": "./src/hooks/use-has-primary-touch.tsx",
+    "./hooks/use-scroll": "./src/hooks/use-scroll.ts",
     "./lib/*": "./src/lib/*.ts",
     "./styles/*": "./src/styles/*",
     "./postcss": "./postcss.config.mjs"
@@ -38,6 +39,7 @@
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^0.542.0",
+    "motion": "^12.34.3",
     "next-themes": "^0.4.6",
     "react-day-picker": "^9.13.2",
     "react-hook-form": "^7.71.1",
