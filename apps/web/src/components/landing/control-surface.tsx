@@ -5,11 +5,11 @@ const ControlSurface = () => {
     <section
       id="workflow"
       aria-labelledby="management-title"
-      className="relative flex w-full max-w-6xl scroll-my-24 flex-col items-center justify-center overflow-hidden rounded-2xl bg-gray-950 px-4 shadow-2xl shadow-black/50 sm:px-10 md:px-20 lg:mx-auto lg:px-28"
+      className="relative flex w-full max-w-6xl scroll-my-24 flex-col items-center justify-center overflow-hidden rounded-2xl bg-background px-4 sm:px-10 md:px-20 lg:mx-auto lg:px-28"
     >
       <div className="absolute left-0 z-10 h-full backdrop-blur-[2px]">
         <svg
-          className="h-full w-5 border-r border-zinc-900 stroke-zinc-800 sm:w-15 md:w-20 lg:w-25"
+          className="h-full w-5 border-r border-border stroke-border/80 sm:w-15 md:w-20 lg:w-25"
           style={{
             maskImage:
               "linear-gradient(transparent, white 10rem, white calc(100% - 10rem), transparent)",
@@ -43,7 +43,7 @@ const ControlSurface = () => {
       </div>
       <div className="absolute right-0 z-10 h-full backdrop-blur-[2px]">
         <svg
-          className="h-full w-8 border-r border-zinc-900 stroke-zinc-800 sm:w-20"
+          className="h-full w-8 border-r border-border stroke-border/80 sm:w-20"
           style={{
             maskImage:
               "linear-gradient(transparent, white 10rem, white calc(100% - 10rem), transparent)",
@@ -77,16 +77,16 @@ const ControlSurface = () => {
       </div>
 
       <div className="px-6 text-center">
-        <div className="pt-12 text-sm font-medium tracking-tight text-orange-400 sm:pt-20 sm:text-base">
+        <div className="pt-12 text-sm font-medium tracking-tight text-primary sm:pt-20 sm:text-base">
           How Pilot Decides
         </div>
         <h2
           id="management-title"
-          className="font-heading mt-6 max-w-[700px] text-3xl font-semibold tracking-tight text-balance text-white sm:text-4xl md:text-5xl"
+          className="font-heading mt-6 max-w-[700px] text-3xl font-semibold tracking-tight text-balance text-foreground sm:text-4xl md:text-5xl"
         >
           One control surface for every DM outcome
         </h2>
-        <p className="mt-4 max-w-2xl text-sm text-balance text-gray-400 sm:mt-8 sm:text-base md:text-xl">
+        <p className="mt-4 max-w-2xl text-sm text-balance text-muted-foreground sm:mt-8 sm:text-base md:text-xl">
           Most tools force you to stitch together flows, tags, and inbox hacks.
           Pilot runs qualification, memory, sentiment, and human handoff from
           one decision engine so each conversation takes the right path
