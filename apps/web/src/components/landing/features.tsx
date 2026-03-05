@@ -545,7 +545,7 @@ const FEATURES_CONTENT = (
                   <div className="relative">
                     <div className="h-0.5 w-60 bg-linear-to-r from-border to-transparent" />
                     <div
-                      className="absolute top-[2.5px] left-0 h-0.5 w-28 bg-linear-to-r from-transparent via-primary/40 to-transparent"
+                      className="absolute top-0 left-0 h-0.5 w-28 bg-linear-to-r from-transparent via-primary/40 to-transparent"
                       style={{
                         animation: `gridMovingLine 5s linear infinite ${index * 1.2}s`,
                         animationFillMode: "backwards",
