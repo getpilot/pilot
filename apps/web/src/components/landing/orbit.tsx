@@ -1,10 +1,12 @@
+import { Children, isValidElement, type ReactNode } from "react"
+
 interface OrbitingObjectProps {
   /** Radius of the orbit in pixels */
   radiusPx?: number
   /** Center element */
-  children: React.ReactNode
+  children: ReactNode
   /** Array of elements to orbit around the center */
-  orbitingObjects: React.ReactNode[]
+  orbitingObjects: ReactNode[]
   /** Default size of orbiting objects (in pixels) for positioning */
   defaultObjectSize?: number
   /** Duration of one complete orbit in seconds */
@@ -13,10 +15,12 @@ interface OrbitingObjectProps {
   keepUpright?: boolean
 }
 
+const EMPTY_ORBITING_OBJECTS: ReactNode[] = []
+
 const Orbit = ({
   radiusPx = 144,
   children,
-  orbitingObjects = [],
+  orbitingObjects = EMPTY_ORBITING_OBJECTS,
   defaultObjectSize = 32,
   durationSeconds = 8,
   keepUpright = false,
@@ -25,12 +29,17 @@ const Orbit = ({
   const containerSize = orbitDiameter + defaultObjectSize
   const initialOffset = radiusPx + defaultObjectSize / 2
 
-  const positionedObjects = orbitingObjects.map((object, index) => {
+  const positionedObjects = Children.toArray(orbitingObjects).map(
+    (object, index) => {
     const delaySeconds = -(index * (durationSeconds / orbitingObjects.length))
+      const objectKey =
+        isValidElement(object) && object.key != null
+          ? String(object.key)
+          : "orbit-item"
 
     return (
       <div
-        key={index}
+        key={objectKey}
         className="absolute flex items-center justify-center"
         style={{
           animationName: "spin",
@@ -65,7 +74,8 @@ const Orbit = ({
         </div>
       </div>
     )
-  })
+    },
+  )
 
   return (
     <div

@@ -102,7 +102,7 @@ const Footer = () => {
                 const offset = i * 8
                 return (
                   <path
-                    key={i}
+                    key={`footer-pattern-${offset}`}
                     d={`M${-106 + offset} 110L${22 + offset} -18`}
                     strokeWidth="1"
                   />

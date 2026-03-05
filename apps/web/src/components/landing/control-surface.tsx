@@ -26,7 +26,7 @@ const ControlSurface = () => {
                 const offset = i * 8;
                 return (
                   <path
-                    key={i}
+                    key={`control-pattern-left-${offset}`}
                     d={`M${-106 + offset} 110L${22 + offset} -18`}
                     strokeWidth="1"
                   />
@@ -60,7 +60,7 @@ const ControlSurface = () => {
                 const offset = i * 8;
                 return (
                   <path
-                    key={i}
+                    key={`control-pattern-right-${offset}`}
                     d={`M${-106 + offset} 110L${22 + offset} -18`}
                     strokeWidth="1"
                   />

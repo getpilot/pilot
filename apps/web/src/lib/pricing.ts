@@ -1,6 +1,6 @@
-export type PlanId = "free" | "starter" | "growth" | "pro"
+type PlanId = "free" | "starter" | "growth" | "pro"
 
-export interface BillingLimits {
+interface BillingLimits {
   maxContactsTotal: number | null
   maxNewContactsPerMonth: number | null
   maxAutomations: number | null
@@ -8,7 +8,7 @@ export interface BillingLimits {
   maxSidekickChatPromptsPerMonth: number | null
 }
 
-export interface PricingPlan {
+interface PricingPlan {
   planId: PlanId
   title: string
   description: string

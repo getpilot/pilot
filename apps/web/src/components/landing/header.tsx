@@ -9,6 +9,15 @@ import { useScroll } from "@pilot/ui/hooks/use-scroll"
 import { siteConfig } from "@/config/site.config"
 import { Icons } from "@/components/icons"
 
+const navLinks = [
+  { label: "Features", href: "#platform" },
+  { label: "Product", href: "#pipeline-analytics" },
+  { label: "Comparison", href: "#comparison" },
+  { label: "Workflow", href: "#workflow" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "FAQ", href: "#faq" },
+]
+
 const Header = () => {
   const [open, setOpen] = React.useState(false)
   const scrolled = useScroll(15)
@@ -30,24 +39,11 @@ const Header = () => {
           </Link>
           <nav className="hidden sm:block md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:transform">
             <div className="flex items-center gap-4 text-sm font-medium lg:gap-6">
-              <Link className="px-2 py-1 text-foreground" href="#platform">
-                Features
-              </Link>
-              <Link className="px-2 py-1 text-foreground" href="#pipeline-analytics">
-                Product
-              </Link>
-              <Link className="px-2 py-1 text-foreground" href="#comparison">
-                Comparison
-              </Link>
-              <Link className="px-2 py-1 text-foreground" href="#workflow">
-                Workflow
-              </Link>
-              <Link className="px-2 py-1 text-foreground" href="#pricing">
-                Pricing
-              </Link>
-              <Link className="px-2 py-1 text-foreground" href="#faq">
-                FAQ
-              </Link>
+              {navLinks.map((link) => (
+                <Link key={link.href} className="px-2 py-1 text-foreground" href={link.href}>
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </nav>
           <Button
@@ -78,24 +74,13 @@ const Header = () => {
           )}
         >
           <ul className="space-y-4 font-medium">
-            <li onClick={() => setOpen(false)}>
-              <Link href="#platform">Features</Link>
-            </li>
-            <li onClick={() => setOpen(false)}>
-              <Link href="#pipeline-analytics">Product</Link>
-            </li>
-            <li onClick={() => setOpen(false)}>
-              <Link href="#comparison">Comparison</Link>
-            </li>
-            <li onClick={() => setOpen(false)}>
-              <Link href="#workflow">Workflow</Link>
-            </li>
-            <li onClick={() => setOpen(false)}>
-              <Link href="#pricing">Pricing</Link>
-            </li>
-            <li onClick={() => setOpen(false)}>
-              <Link href="#faq">FAQ</Link>
-            </li>
+            {navLinks.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} onClick={() => setOpen(false)}>
+                  {link.label}
+                </Link>
+              </li>
+            ))}
           </ul>
           <Button variant="secondary" asChild>
             <Link href="/waitlist">Join waitlist</Link>

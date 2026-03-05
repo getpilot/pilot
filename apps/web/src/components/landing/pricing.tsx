@@ -14,7 +14,7 @@ import {
   pricingPlans,
 } from "@/lib/pricing";
 import { useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import Link from "next/link";
 
 const APP_UPGRADE_URL = "https://pilot-ops-app.vercel.app/upgrade";
@@ -83,17 +83,19 @@ const Pricing = () => {
             >
               Yearly (20% off)
             </button>
-            <motion.div
-              className="bg-primary absolute z-0 rounded-full"
-              initial={false}
-              animate={{ x: isYearly ? 120 : 0 }}
-              transition={
-                shouldReduceMotion
-                  ? { duration: 0 }
-                  : { type: "spring", stiffness: 300, damping: 30 }
-              }
-              style={{ width: isYearly ? 180 : 120, height: "100%" }}
-            />
+            <LazyMotion features={domAnimation}>
+              <m.div
+                className="bg-primary absolute z-0 rounded-full"
+                initial={false}
+                animate={{ x: isYearly ? 120 : 0 }}
+                transition={
+                  shouldReduceMotion
+                    ? { duration: 0 }
+                    : { type: "spring", stiffness: 300, damping: 30 }
+                }
+                style={{ width: isYearly ? 180 : 120, height: "100%" }}
+              />
+            </LazyMotion>
           </div>
         </div>
       )}

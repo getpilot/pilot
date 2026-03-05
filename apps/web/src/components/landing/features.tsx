@@ -13,13 +13,12 @@ import {
 import Orbit from "./orbit";
 import ChipViz from "./sparkle-halo";
 
-const Features = () => {
-  return (
-    <section
-      aria-label="Pilot platform overview"
-      id="platform"
-      className="relative mx-auto max-w-6xl scroll-my-24"
-    >
+const FEATURES_CONTENT = (
+  <section
+    aria-label="Pilot platform overview"
+    id="platform"
+    className="relative mx-auto max-w-6xl scroll-my-24"
+  >
       {/* Vertical Lines */}
       <div className="pointer-events-none inset-0 select-none">
         {/* Left */}
@@ -158,7 +157,7 @@ const Features = () => {
                   const offset = i * 8;
                   return (
                     <path
-                      key={i}
+                      key={`feature-pattern-a-${offset}`}
                       d={`M${-106 + offset} 110L${22 + offset} -18`}
                       className="stroke-border/70"
                       strokeWidth="1"
@@ -321,7 +320,7 @@ const Features = () => {
                   const offset = i * 8;
                   return (
                     <path
-                      key={i}
+                      key={`feature-pattern-b-${offset}`}
                       d={`M${-106 + offset} 110L${22 + offset} -18`}
                       className="stroke-border/70"
                       strokeWidth="1"
@@ -457,7 +456,7 @@ const Features = () => {
                   const offset = i * 8;
                   return (
                     <path
-                      key={i}
+                      key={`feature-pattern-c-${offset}`}
                       d={`M${-106 + offset} 110L${22 + offset} -18`}
                       className="stroke-border/70"
                       strokeWidth="1"
@@ -541,8 +540,9 @@ const Features = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
-};
+  </section>
+)
+
+const Features = () => FEATURES_CONTENT
 
 export default Features;
