@@ -64,6 +64,16 @@ const Pricing = () => {
             className="bg-muted relative flex w-[300px] items-center justify-between rounded-full border"
             role="radiogroup"
             aria-label="Billing frequency"
+            onKeyDown={(event) => {
+              if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+                event.preventDefault();
+                setIsYearly(true);
+              }
+              if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+                event.preventDefault();
+                setIsYearly(false);
+              }
+            }}
           >
             <button
               onClick={() => setIsYearly(false)}
@@ -102,7 +112,7 @@ const Pricing = () => {
 
       <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-6">
         {pricingPlans.map((plan, index) => {
-          const isBestValue = plan.planId === "growth";
+          const isBestValue = plan.highlighted === true;
 
           return (
             <Card
@@ -227,16 +237,31 @@ const Pricing = () => {
             </ul>
 
             <div className="mt-auto pt-8">
-              <Button className="w-full gap-2" variant="outline" asChild>
-                <Link
-                  href={APP_UPGRADE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Buy in app
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
+              <p className="text-muted-foreground mb-4 text-center text-sm">
+                Contact
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <Button className="w-full gap-2" variant="outline" asChild>
+                  <Link
+                    href="https://www.instagram.com/pilot.ops/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Instagram
+                    <ArrowRight className="size-4" />
+                  </Link>
+                </Button>
+                <Button className="w-full gap-2" variant="outline" asChild>
+                  <Link
+                    href="https://x.com/PilotOps_"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    X
+                    <ArrowRight className="size-4" />
+                  </Link>
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

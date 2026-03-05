@@ -79,7 +79,6 @@ export const pricingPlans: PricingPlan[] = [
     yearlyPriceCents: 1520,
     displayMonthlyPrice: "$19",
     displayYearlyPrice: "$15.20",
-    highlighted: true,
     features: getPlanFeaturesFromLimits({
       maxContactsTotal: 2000,
       maxNewContactsPerMonth: 500,
@@ -103,6 +102,7 @@ export const pricingPlans: PricingPlan[] = [
     yearlyPriceCents: 3120,
     displayMonthlyPrice: "$39",
     displayYearlyPrice: "$31.20",
+    highlighted: true,
     features: getPlanFeaturesFromLimits({
       maxContactsTotal: 5000,
       maxNewContactsPerMonth: 2000,
