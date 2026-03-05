@@ -10,12 +10,12 @@ import { siteConfig } from "@/config/site.config"
 import { Icons } from "@/components/icons"
 
 const navLinks = [
-  { label: "Features", href: "#platform" },
-  { label: "Product", href: "#pipeline-analytics" },
-  { label: "Comparison", href: "#comparison" },
-  { label: "Workflow", href: "#workflow" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Features", href: "/#platform" },
+  { label: "Product", href: "/#pipeline-analytics" },
+  { label: "Comparison", href: "/#comparison" },
+  { label: "Workflow", href: "/#workflow" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "FAQ", href: "/#faq" },
 ]
 
 const Header = () => {

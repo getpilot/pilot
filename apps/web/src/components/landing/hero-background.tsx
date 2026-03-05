@@ -13,6 +13,7 @@ const GameOfLife = () => {
     if (!ctx) return
 
     let animationFrameId: number
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
     const cellSize = 6
     const cols = Math.floor(canvas.width / cellSize)
     const rows = Math.floor(canvas.height / cellSize)
@@ -87,7 +88,7 @@ const GameOfLife = () => {
       )
 
       grid = next
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         animationFrameId = requestAnimationFrame(draw)
       }, 125)
     }
@@ -95,6 +96,9 @@ const GameOfLife = () => {
     draw()
 
     return () => {
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId)
+      }
       cancelAnimationFrame(animationFrameId)
     }
   }, [])

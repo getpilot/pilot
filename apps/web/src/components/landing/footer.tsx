@@ -11,13 +11,13 @@ const sections = {
   landing: {
     title: "Landing",
     items: [
-      { label: "Features", href: "#platform" },
-      { label: "Product", href: "#pipeline-analytics" },
-      { label: "Comparison", href: "#comparison" },
-      { label: "Workflow", href: "#workflow" },
-      { label: "Proof", href: "#social-proof" },
-      { label: "Pricing", href: "#pricing" },
-      { label: "FAQ", href: "#faq" },
+      { label: "Features", href: "/#platform" },
+      { label: "Product", href: "/#pipeline-analytics" },
+      { label: "Comparison", href: "/#comparison" },
+      { label: "Workflow", href: "/#workflow" },
+      { label: "Proof", href: "/#social-proof" },
+      { label: "Pricing", href: "/#pricing" },
+      { label: "FAQ", href: "/#faq" },
     ],
   },
   pages: {
@@ -32,7 +32,7 @@ const sections = {
   resources: {
     title: "Resources",
     items: [
-      { label: "Manifesto", href: "/waitlist" },
+      { label: "Manifesto", href: "/manifesto" },
       { label: "App", href: "https://pilot-ops-app.vercel.app/" },
       { label: "GitHub", href: "https://github.com/getpilot" },
     ],
