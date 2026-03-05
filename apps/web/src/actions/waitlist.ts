@@ -13,10 +13,10 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * @param name - User's full name
  * @returns Promise with success/error response matching your existing server action format
  */
-export async function addToWaitlist(
+const addToWaitlist = async (
   email: string,
   name: string
-): Promise<{ success: true } | { success: false; error: string }> {
+): Promise<{ success: true } | { success: false; error: string }> => {
   try {
     if (!EMAIL_REGEX.test(email)) {
       return { success: false, error: "Please enter a valid email" };
@@ -57,27 +57,3 @@ export async function submitWaitlistAction(
   return await addToWaitlist(email, name);
 }
 
-/**
- * Alternative async function for use in React Server Components
- * Returns the same format as your existing server action
- */
-export async function submitWaitlistForm(
-  email: string,
-  name: string
-): Promise<{ success: true } | { success: false; error: string }> {
-  return await addToWaitlist(email, name);
-}
-
-/**
- * Validate email format (client-side validation helper)
- */
-export async function validateEmail(email: string): Promise<boolean> {
-  return EMAIL_REGEX.test(email);
-}
-
-/**
- * Validate name (client-side validation helper)
- */
-export async function validateName(name: string): Promise<boolean> {
-  return name.trim().length > 0;
-}

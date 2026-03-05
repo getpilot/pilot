@@ -111,7 +111,6 @@ export function InputForm({ formAction, buttonCopy }: InputForm) {
           autoComplete="name"
           data-1p-ignore
           data-lpignore
-          autoFocus
           required
         />
         <input
