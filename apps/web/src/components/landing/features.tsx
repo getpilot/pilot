@@ -184,6 +184,7 @@ const SignalIntakeDiagram = () => (
     <div className="pointer-events-none h-104 w-full max-w-full p-6 sm:p-10 select-none">
       <div className="relative flex flex-col items-center justify-center">
         <Orbit
+          className="scale-70 sm:scale-80 md:scale-90 lg:scale-100"
           durationSeconds={40}
           radiusPx={140}
           keepUpright
@@ -194,7 +195,7 @@ const SignalIntakeDiagram = () => (
             >
               <ShieldAlert className="z-10 size-5 text-foreground" />
               <div className="absolute size-10 rounded-full bg-card/80 ring-1 shadow-lg ring-border" />
-              <div className="absolute -top-4 left-4">
+              <div className="absolute -top-4 left-4 z-20">
                 <div className="inline-flex h-6 items-center overflow-hidden rounded-full border border-border bg-card/80 text-[11px]">
                   <div className="flex h-full items-center justify-center bg-destructive px-1.5">
                     <Bell className="size-3 shrink-0 text-white" />
@@ -206,7 +207,7 @@ const SignalIntakeDiagram = () => (
               </div>
               <div
                 style={{ animationDelay: "1s" }}
-                className="absolute size-10 animate-[ping_7s_ease_infinite] rounded-full ring-1 ring-primary/50"
+                className="absolute z-0 size-10 animate-[ping_7s_ease_infinite] rounded-full ring-1 ring-primary/50"
               />
             </div>,
             <div
@@ -215,7 +216,7 @@ const SignalIntakeDiagram = () => (
             >
               <MessageCircle className="z-10 size-5 text-foreground" />
               <div className="absolute size-10 rounded-full bg-card/80 ring-1 shadow-lg ring-border" />
-              <div className="absolute -top-4 left-4">
+              <div className="absolute -top-4 left-4 z-20">
                 <div className="inline-flex h-6 items-center overflow-hidden rounded-full border border-border bg-card/80 text-[11px]">
                   <div className="flex h-full items-center justify-center bg-muted-foreground px-1.5">
                     <LoaderCircle className="size-3 shrink-0 animate-spin text-white" />
@@ -227,7 +228,7 @@ const SignalIntakeDiagram = () => (
               </div>
               <div
                 style={{ animationDelay: "4s" }}
-                className="absolute size-10 animate-[ping_7s_ease_infinite] rounded-full ring-1 ring-primary/50"
+                className="absolute z-0 size-10 animate-[ping_7s_ease_infinite] rounded-full ring-1 ring-primary/50"
               />
             </div>,
             <div
@@ -236,7 +237,7 @@ const SignalIntakeDiagram = () => (
             >
               <Brain className="z-10 size-5 text-foreground" />
               <div className="absolute size-10 rounded-full bg-card/80 ring-1 shadow-lg ring-border" />
-              <div className="absolute -top-4 left-4">
+              <div className="absolute -top-4 left-4 z-20">
                 <div className="inline-flex h-6 items-center overflow-hidden rounded-full border border-border bg-card/80 text-[11px]">
                   <div className="flex h-full items-center justify-center bg-primary/80 px-1.5">
                     <BotIcon className="size-3 shrink-0 text-white" />
@@ -248,7 +249,7 @@ const SignalIntakeDiagram = () => (
               </div>
               <div
                 style={{ animationDelay: "2s" }}
-                className="absolute size-10 animate-[ping_7s_ease_infinite] rounded-full ring-1 ring-primary/50"
+                className="absolute z-0 size-10 animate-[ping_7s_ease_infinite] rounded-full ring-1 ring-primary/50"
               />
             </div>,
             <div
@@ -257,7 +258,7 @@ const SignalIntakeDiagram = () => (
             >
               <BadgeCheck className="z-10 size-5 text-foreground" />
               <div className="absolute size-10 rounded-full bg-card/80 ring-1 shadow-lg ring-border" />
-              <div className="absolute -top-4 left-4">
+              <div className="absolute -top-4 left-4 z-20">
                 <div className="inline-flex h-6 items-center overflow-hidden rounded-full border border-border bg-card/80 text-[11px]">
                   <div className="flex h-full items-center justify-center bg-emerald-500 px-1.5">
                     <MessageCircle className="size-3 shrink-0 text-white" />
@@ -269,7 +270,7 @@ const SignalIntakeDiagram = () => (
               </div>
               <div
                 style={{ animationDelay: "6s" }}
-                className="absolute size-10 animate-[ping_7s_ease_infinite] rounded-full ring-1 ring-primary/50"
+                className="absolute z-0 size-10 animate-[ping_7s_ease_infinite] rounded-full ring-1 ring-primary/50"
               />
             </div>,
             <div
@@ -278,7 +279,7 @@ const SignalIntakeDiagram = () => (
             >
               <Instagram className="z-10 size-5 text-foreground" />
               <div className="absolute size-10 rounded-full bg-card/80 ring-1 shadow-lg ring-border" />
-              <div className="absolute -top-4 left-4">
+              <div className="absolute -top-4 left-4 z-20">
                 <div className="inline-flex h-6 items-center overflow-hidden rounded-full border border-border bg-card/80 text-[11px]">
                   <div className="flex h-full items-center justify-center bg-amber-500 px-1.5">
                     <Zap className="size-3 shrink-0 text-white" />
@@ -290,7 +291,7 @@ const SignalIntakeDiagram = () => (
               </div>
               <div
                 style={{ animationDelay: "3s" }}
-                className="absolute size-10 animate-[ping_7s_ease_infinite] rounded-full ring-1 ring-primary/50"
+                className="absolute z-0 size-10 animate-[ping_7s_ease_infinite] rounded-full ring-1 ring-primary/50"
               />
             </div>,
           ]}

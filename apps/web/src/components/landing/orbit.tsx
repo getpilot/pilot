@@ -3,6 +3,8 @@ import { Children, isValidElement, type ReactNode } from "react"
 interface OrbitingObjectProps {
   /** Radius of the orbit in pixels */
   radiusPx?: number
+  /** Optional wrapper classes */
+  className?: string
   /** Center element */
   children: ReactNode
   /** Array of elements to orbit around the center */
@@ -19,6 +21,7 @@ const EMPTY_ORBITING_OBJECTS: ReactNode[] = []
 
 const Orbit = ({
   radiusPx = 144,
+  className,
   children,
   orbitingObjects = EMPTY_ORBITING_OBJECTS,
   defaultObjectSize = 32,
@@ -79,7 +82,7 @@ const Orbit = ({
 
   return (
     <div
-      className="relative flex items-center justify-center"
+      className={`relative flex items-center justify-center ${className ?? ""}`}
       style={{
         width: `${containerSize}px`,
         height: `${containerSize}px`,
@@ -87,7 +90,7 @@ const Orbit = ({
     >
       {/* Orbital path */}
       <div
-        className="absolute animate-pulse rounded-full border border-border bg-muted/30"
+        className="absolute top-1/2 left-1/2 animate-pulse rounded-full border border-border bg-muted/30 -translate-x-1/2 -translate-y-1/2"
         style={{
           width: `${orbitDiameter}px`,
           height: `${orbitDiameter}px`,

@@ -85,16 +85,17 @@ const CompareTable = () => {
         flow-builder complexity or contact-tax pricing.
       </p>
 
-      <div className="mt-8 overflow-x-auto rounded-xl border border-border">
-        <Table className="min-w-[920px]">
+      <div className="-mx-2 mt-8 overflow-x-auto sm:mx-0">
+        <div className="rounded-xl border border-border">
+          <Table className="min-w-[760px] sm:min-w-[920px]">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="h-auto w-[260px] px-6 py-5">Dimension</TableHead>
-              <TableHead className="h-auto w-[260px] px-4 py-5">ManyChat</TableHead>
-              <TableHead className="h-auto w-[260px] bg-muted/40 px-4 py-5">
+              <TableHead className="h-auto w-[220px] px-4 py-4 text-xs sm:w-[260px] sm:px-6 sm:py-5 sm:text-sm">Dimension</TableHead>
+              <TableHead className="h-auto w-[220px] px-4 py-4 text-xs sm:w-[260px] sm:py-5 sm:text-sm">ManyChat</TableHead>
+              <TableHead className="h-auto w-[220px] bg-muted/40 px-4 py-4 text-xs sm:w-[260px] sm:py-5 sm:text-sm">
                 Pilot
               </TableHead>
-              <TableHead className="h-auto w-[180px] px-4 py-5 text-center">
+              <TableHead className="h-auto w-[120px] px-4 py-4 text-center text-xs sm:w-[180px] sm:py-5 sm:text-sm">
                 Advantage
               </TableHead>
             </TableRow>
@@ -102,16 +103,16 @@ const CompareTable = () => {
           <TableBody>
             {rows.map((row) => (
               <TableRow key={row.dimension}>
-                <TableCell className="px-6 py-6 text-sm font-medium whitespace-normal">
+                <TableCell className="px-4 py-4 text-xs font-medium whitespace-normal sm:px-6 sm:py-6 sm:text-sm">
                   {row.dimension}
                 </TableCell>
-                <TableCell className="px-4 py-6 text-sm text-muted-foreground whitespace-normal">
+                <TableCell className="px-4 py-4 text-xs text-muted-foreground whitespace-normal sm:py-6 sm:text-sm">
                   {row.manychat}
                 </TableCell>
-                <TableCell className="bg-muted/40 px-4 py-6 text-sm text-foreground whitespace-normal">
+                <TableCell className="bg-muted/40 px-4 py-4 text-xs text-foreground whitespace-normal sm:py-6 sm:text-sm">
                   {row.pilot}
                 </TableCell>
-                <TableCell className="px-4 py-6 text-center text-sm font-medium">
+                <TableCell className="px-4 py-4 text-center text-xs font-medium sm:py-6 sm:text-sm">
                   {row.advantage === "Pilot" ? (
                     <span className="inline-flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
                       <Check className="h-4 w-4" />
@@ -127,7 +128,8 @@ const CompareTable = () => {
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+          </Table>
+        </div>
       </div>
     </section>
   )

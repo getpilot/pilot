@@ -140,8 +140,11 @@ const MOCK_CONTACTS: ContactRow[] = [
 
 const ProductIllustration = () => {
   return (
-    <div className="shrink-0 overflow-hidden mask-[radial-gradient(white_35%,transparent_95%)] perspective-[4000px] perspective-origin-center">
-      <div className="-translate-y-10 -translate-z-10 rotate-x-10 rotate-y-18 -rotate-z-10 transform-3d">
+    <div
+      aria-hidden="true"
+      className="shrink-0 max-h-[520px] select-none overflow-hidden mask-[radial-gradient(white_35%,transparent_95%)] perspective-[4000px] perspective-origin-center sm:max-h-[620px]"
+    >
+      <div className="-translate-y-6 -translate-z-6 rotate-x-6 rotate-y-12 -rotate-z-6 transform-3d sm:-translate-y-8 sm:rotate-x-8 sm:rotate-y-14 sm:-rotate-z-8 md:-translate-y-10 md:-translate-z-10 md:rotate-x-10 md:rotate-y-18 md:-rotate-z-10">
         <div className="w-full space-y-5 rounded-xl border border-border bg-card/95 p-5 shadow-xl">
           <div className="flex flex-col gap-2">
             <h3 className="font-heading text-3xl font-bold tracking-tight text-foreground">
@@ -156,7 +159,7 @@ const ProductIllustration = () => {
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative">
                 <Input
-                  className="peer min-w-[240px] ps-9 border-border focus-visible:ring-ring"
+                  className="peer min-w-[180px] sm:min-w-[240px] ps-9 border-border focus-visible:ring-ring"
                   value="Filter by name..."
                   readOnly
                   aria-label="Filter by name"
@@ -201,8 +204,8 @@ const ProductIllustration = () => {
             </Button>
           </div>
 
-          <div className="bg-card overflow-hidden rounded-md border border-border shadow-sm">
-            <Table className="table-fixed">
+          <div className="bg-card overflow-x-auto rounded-md border border-border shadow-sm">
+            <Table className="min-w-[760px] table-fixed sm:min-w-[980px]">
               <TableHeader className="bg-muted">
                 <TableRow className="hover:bg-transparent border-border">
                   <TableHead className="w-10 bg-background/75" />
@@ -282,7 +285,7 @@ const ProductIllustration = () => {
             </Table>
           </div>
 
-          <div className="flex items-center gap-6 px-1">
+          <div className="flex flex-wrap items-center gap-6 px-1">
             <div className="flex items-center gap-3">
               <Label htmlFor="mock-page-size" className="text-muted-foreground whitespace-nowrap">
                 Rows per page
