@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch, UseFormReturn } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Card, CardContent } from "@pilot/ui/components/card";
@@ -50,7 +50,9 @@ import {
 } from "@/actions/sidekick/onboarding";
 
 const step0Schema = z.object({
-  primaryOfferUrl: z.string().url({ message: "That doesn't look like a valid URL" }),
+  primaryOfferUrl: z
+    .string()
+    .url({ message: "That doesn't look like a valid URL" }),
   calendarLink: z
     .string()
     .url({ message: "That doesn't look like a valid URL" })
@@ -65,18 +67,20 @@ const step0Schema = z.object({
 
 const step1Schema = z.object({
   offerName: z.string().min(1, { message: "What should we call this offer?" }),
-  offerContent: z.string().min(1, { message: "Tell us what this offer includes" }),
+  offerContent: z
+    .string()
+    .min(1, { message: "Tell us what this offer includes" }),
   offerValue: z.string().optional(),
 });
 
 const step2Schema = z.object({
-  sellDescription: z
-    .string()
-    .min(1, { message: "Tell us what you sell" }),
+  sellDescription: z.string().min(1, { message: "Tell us what you sell" }),
 });
 
 const step3Schema = z.object({
-  question: z.string().min(1, { message: "What question do people always ask?" }),
+  question: z
+    .string()
+    .min(1, { message: "What question do people always ask?" }),
   answer: z.string().optional(),
 });
 
@@ -95,80 +99,13 @@ type step4FormValues = z.infer<typeof step4Schema>;
 type OfferItem = { id?: string; name: string; content: string; value?: number };
 type FaqItem = { id?: string; question: string; answer?: string };
 
-async function checkSidekickStatusAction(
-  router: { replace: (url: string) => void },
-  setIsInitializing: (v: boolean) => void
-) {
-  try {
-    setIsInitializing(true);
-    const status = await checkSidekickOnboardingStatus();
-    if (status.sidekick_onboarding_complete) {
-      router.replace("/");
-    }
-  } catch (error) {
-    console.error("Error checking sidekick onboarding status:", error);
-  } finally {
-    setIsInitializing(false);
-  }
-}
-
-async function fetchOfferLinksAction(
-  step0Form: UseFormReturn<step0FormValues>,
-  setStepValidationState: React.Dispatch<React.SetStateAction<Record<number, boolean>>>,
-  setIsInitializing: (v: boolean) => void
-) {
-  try {
-    setIsInitializing(true);
-    const result = await getSidekickOfferLinks();
-
-    if (result.success && result.data) {
-      step0Form.setValue("primaryOfferUrl", result.data.primaryOfferUrl || "");
-      step0Form.setValue("calendarLink", result.data.calendarLink || "");
-      step0Form.setValue("additionalInfoUrl", result.data.additionalInfoUrl || "");
-
-      if (result.data.primaryOfferUrl) {
-        setStepValidationState((prevState) => ({ ...prevState, 0: true }));
-      }
-    }
-  } catch (error) {
-    console.error("Error fetching offer links:", error);
-  } finally {
-    setIsInitializing(false);
-  }
-}
-
-async function fetchOffersAction(
-  setOffers: React.Dispatch<React.SetStateAction<OfferItem[]>>,
-  setStepValidationState: React.Dispatch<React.SetStateAction<Record<number, boolean>>>,
-  setIsInitializing: (v: boolean) => void
-) {
-  try {
-    setIsInitializing(true);
-    const result = await getSidekickOffers();
-
-    if (result.success && result.data && result.data.length > 0) {
-      setOffers(
-        result.data.map((offer) => ({
-          id: offer.id,
-          name: offer.name,
-          content: offer.content,
-          value: offer.value || undefined,
-        }))
-      );
-      setStepValidationState((prevState) => ({ ...prevState, 1: true }));
-    }
-  } catch (error) {
-    console.error("Error fetching offers:", error);
-  } finally {
-    setIsInitializing(false);
-  }
-}
-
 async function submitSidekickStep0Action(
   values: step0FormValues,
   setIsLoading: (v: boolean) => void,
-  setStepValidationState: React.Dispatch<React.SetStateAction<Record<number, boolean>>>,
-  onSuccess: () => void
+  setStepValidationState: React.Dispatch<
+    React.SetStateAction<Record<number, boolean>>
+  >,
+  onSuccess: () => void,
 ) {
   try {
     setIsLoading(true);
@@ -208,7 +145,9 @@ async function submitSidekickStep1Action(
   step1Form: { reset: (values: step1FormValues) => void },
   setOffers: React.Dispatch<React.SetStateAction<OfferItem[]>>,
   setIsLoading: (v: boolean) => void,
-  setStepValidationState: React.Dispatch<React.SetStateAction<Record<number, boolean>>>
+  setStepValidationState: React.Dispatch<
+    React.SetStateAction<Record<number, boolean>>
+  >,
 ) {
   try {
     setIsLoading(true);
@@ -247,8 +186,10 @@ async function submitSidekickStep1Action(
 async function submitSidekickStep2Action(
   values: step2FormValues,
   setIsLoading: (v: boolean) => void,
-  setStepValidationState: React.Dispatch<React.SetStateAction<Record<number, boolean>>>,
-  onSuccess: () => void
+  setStepValidationState: React.Dispatch<
+    React.SetStateAction<Record<number, boolean>>
+  >,
+  onSuccess: () => void,
 ) {
   try {
     setIsLoading(true);
@@ -262,7 +203,7 @@ async function submitSidekickStep2Action(
       return;
     }
 
-    setStepValidationState((prevState) => ({ ...prevState, 2: true }));
+    setStepValidationState((prevState) => ({ ...prevState, 1: true }));
     onSuccess();
     toast.success("Saved. Almost done.");
   } catch (error) {
@@ -279,13 +220,15 @@ async function submitSidekickStep3Action(
   step3Form: { reset: (values: step3FormValues) => void },
   setFaqs: React.Dispatch<React.SetStateAction<FaqItem[]>>,
   setIsLoading: (v: boolean) => void,
-  setStepValidationState: React.Dispatch<React.SetStateAction<Record<number, boolean>>>
+  setStepValidationState: React.Dispatch<
+    React.SetStateAction<Record<number, boolean>>
+  >,
 ) {
   try {
     setIsLoading(true);
 
     const isDuplicate = currentFaqs.some(
-      (faq) => faq.question.toLowerCase() === values.question.toLowerCase()
+      (faq) => faq.question.toLowerCase() === values.question.toLowerCase(),
     );
 
     if (isDuplicate) {
@@ -302,9 +245,12 @@ async function submitSidekickStep3Action(
       return;
     }
 
-    setFaqs([...currentFaqs, { question: values.question, answer: values.answer }]);
+    setFaqs([
+      ...currentFaqs,
+      { question: values.question, answer: values.answer },
+    ]);
     step3Form.reset({ question: "", answer: "" });
-    setStepValidationState((prevState) => ({ ...prevState, 3: true }));
+    setStepValidationState((prevState) => ({ ...prevState, 2: true }));
     toast.success("FAQ saved successfully!");
   } catch (error) {
     console.error("Error submitting step 3:", error);
@@ -317,8 +263,10 @@ async function submitSidekickStep3Action(
 async function submitSidekickStep4Action(
   values: step4FormValues,
   setIsLoading: (v: boolean) => void,
-  setStepValidationState: React.Dispatch<React.SetStateAction<Record<number, boolean>>>,
-  router: { push: (url: string) => void }
+  setStepValidationState: React.Dispatch<
+    React.SetStateAction<Record<number, boolean>>
+  >,
+  router: { push: (url: string) => void },
 ) {
   try {
     setIsLoading(true);
@@ -368,7 +316,7 @@ async function submitSidekickStep4Action(
       return;
     }
 
-    setStepValidationState((prevState) => ({ ...prevState, 4: true }));
+    setStepValidationState((prevState) => ({ ...prevState, 3: true }));
     toast.success("Sidekick is ready.");
     router.push("/");
   } catch (error) {
@@ -383,7 +331,7 @@ async function deleteFaqAction(
   faqId: string,
   currentFaqs: FaqItem[],
   setFaqs: React.Dispatch<React.SetStateAction<FaqItem[]>>,
-  setIsLoading: (v: boolean) => void
+  setIsLoading: (v: boolean) => void,
 ) {
   try {
     setIsLoading(true);
@@ -407,7 +355,7 @@ async function deleteOfferAction(
   index: number,
   currentOffers: OfferItem[],
   setOffers: React.Dispatch<React.SetStateAction<OfferItem[]>>,
-  setIsLoading: (v: boolean) => void
+  setIsLoading: (v: boolean) => void,
 ) {
   try {
     setIsLoading(true);
@@ -433,6 +381,7 @@ export default function SidekickOnboardingPage() {
   const [activeStep, setActiveStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [hasStoredMainOffering, setHasStoredMainOffering] = useState(false);
   const [offers, setOffers] = useState<
     Array<{ id?: string; name: string; content: string; value?: number }>
   >([]);
@@ -443,7 +392,6 @@ export default function SidekickOnboardingPage() {
     1: false,
     2: false,
     3: false,
-    4: false,
   });
 
   const [faqs, setFaqs] = useState<
@@ -493,109 +441,213 @@ export default function SidekickOnboardingPage() {
   });
 
   useEffect(() => {
-    checkSidekickStatusAction(router, setIsInitializing);
-  }, [router]);
+    let isMounted = true;
 
-  useEffect(() => {
-    fetchOfferLinksAction(step0Form, setStepValidationState, setIsInitializing);
-  }, []);
+    async function initializeSidekickOnboarding() {
+      setIsInitializing(true);
 
-  useEffect(() => {
-    fetchOffersAction(setOffers, setStepValidationState, setIsInitializing);
-  }, []);
+      const status = await checkSidekickOnboardingStatus().catch((error) => {
+        console.error("Error checking sidekick onboarding status:", error);
+        return null;
+      });
 
-  useEffect(() => {
-    async function fetchMainOffering() {
-      try {
-        const result = await getSidekickMainOffering();
-
-        if (result.success) {
-          if (result.data) {
-            step2Form.setValue("sellDescription", result.data);
-            setStepValidationState((prevState) => ({ ...prevState, 2: true }));
-          }
+      if (!status) {
+        if (isMounted) {
+          setIsInitializing(false);
         }
-      } catch (error) {
-        console.error("Error fetching main offering:", error);
-      }
-    }
-
-    fetchMainOffering();
-  }, []);
-
-  useEffect(() => {
-    async function fetchFaqs() {
-      const result = await getSidekickFaqs().catch((error) => {
-        console.error("Error fetching FAQs:", error);
-        return null;
-      });
-
-      if (!result || !result.success || !result.data || result.data.length === 0) {
         return;
       }
 
-      setFaqs(
-        result.data.map((faq) => ({
-          id: faq.id,
-          question: faq.question,
-          answer: faq.answer || undefined,
-        }))
-      );
-      setStepValidationState((prevState) => ({ ...prevState, 3: true }));
-    }
-
-    fetchFaqs();
-  }, []);
-
-  useEffect(() => {
-    async function fetchToneProfile() {
-      const result = await getSidekickToneProfile().catch((error) => {
-        console.error("Error fetching tone profile:", error);
-        return null;
-      });
-
-      if (!result || !result.success || !result.data) {
+      if (status.sidekick_onboarding_complete) {
+        router.replace("/");
+        if (isMounted) {
+          setIsInitializing(false);
+        }
         return;
       }
 
-      step4Form.setValue("toneType", result.data.toneType || "");
-      step4Form.setValue("customTone", result.data.customTone || "");
-      step4Form.setValue("sampleMessages", result.data.sampleMessages || "");
+      const [
+        offerLinksResult,
+        offersResult,
+        mainOfferingResult,
+        faqsResult,
+        toneProfileResult,
+      ] = await Promise.all([
+        getSidekickOfferLinks().catch((error) => {
+          console.error("Error fetching offer links:", error);
+          return null;
+        }),
+        getSidekickOffers().catch((error) => {
+          console.error("Error fetching offers:", error);
+          return null;
+        }),
+        getSidekickMainOffering().catch((error) => {
+          console.error("Error fetching main offering:", error);
+          return null;
+        }),
+        getSidekickFaqs().catch((error) => {
+          console.error("Error fetching FAQs:", error);
+          return null;
+        }),
+        getSidekickToneProfile().catch((error) => {
+          console.error("Error fetching tone profile:", error);
+          return null;
+        }),
+      ]);
 
-      if (result.data.toneType) {
-        setStepValidationState((prevState) => ({ ...prevState, 4: true }));
+      if (!isMounted) {
+        return;
       }
+
+      if (offerLinksResult?.success && offerLinksResult.data) {
+        step0Form.setValue(
+          "primaryOfferUrl",
+          offerLinksResult.data.primaryOfferUrl || "",
+        );
+        step0Form.setValue(
+          "calendarLink",
+          offerLinksResult.data.calendarLink || "",
+        );
+        step0Form.setValue(
+          "additionalInfoUrl",
+          offerLinksResult.data.additionalInfoUrl || "",
+        );
+      }
+
+      const initialOffers =
+        offersResult?.success && offersResult.data
+          ? offersResult.data.map((offer) => ({
+              id: offer.id,
+              name: offer.name,
+              content: offer.content,
+              value: offer.value || undefined,
+            }))
+          : [];
+      setOffers(initialOffers);
+
+      const storedMainOffering =
+        mainOfferingResult?.success &&
+        typeof mainOfferingResult.data === "string"
+          ? mainOfferingResult.data
+          : null;
+      if (storedMainOffering) {
+        step2Form.setValue("sellDescription", storedMainOffering);
+      }
+      setHasStoredMainOffering(!!storedMainOffering);
+
+      const initialFaqs =
+        faqsResult?.success && faqsResult.data
+          ? faqsResult.data.map((faq) => ({
+              id: faq.id,
+              question: faq.question,
+              answer: faq.answer || undefined,
+            }))
+          : [];
+      setFaqs(initialFaqs);
+
+      if (toneProfileResult?.success && toneProfileResult.data) {
+        step4Form.setValue("toneType", toneProfileResult.data.toneType || "");
+        step4Form.setValue(
+          "customTone",
+          toneProfileResult.data.customTone || "",
+        );
+        step4Form.setValue(
+          "sampleMessages",
+          toneProfileResult.data.sampleMessages || "",
+        );
+      }
+
+      setStepValidationState({
+        0:
+          !!offerLinksResult?.success &&
+          !!offerLinksResult.data?.primaryOfferUrl,
+        1: initialOffers.length > 0 && !!storedMainOffering,
+        2: initialFaqs.length > 0,
+        3: !!toneProfileResult?.success && !!toneProfileResult.data?.toneType,
+      });
+      setIsInitializing(false);
     }
 
-    fetchToneProfile();
-  }, []);
+    initializeSidekickOnboarding();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router, step0Form, step2Form, step4Form]);
 
   const handleStep0Submit = () =>
-    submitSidekickStep0Action(step0Form.getValues(), setIsLoading, setStepValidationState, handleNext);
+    submitSidekickStep0Action(
+      step0Form.getValues(),
+      setIsLoading,
+      setStepValidationState,
+      handleNext,
+    );
 
   const handleStep1Submit = (values: step1FormValues) =>
-    submitSidekickStep1Action(values, offers, step1Form, setOffers, setIsLoading, setStepValidationState);
+    submitSidekickStep1Action(
+      values,
+      offers,
+      step1Form,
+      setOffers,
+      setIsLoading,
+      setStepValidationState,
+    );
 
   const handleStep2Submit = (values: step2FormValues) =>
-    submitSidekickStep2Action(values, setIsLoading, setStepValidationState, handleNext);
+    submitSidekickStep2Action(
+      values,
+      setIsLoading,
+      setStepValidationState,
+      () => {
+        setHasStoredMainOffering(true);
+        handleNext();
+      },
+    );
 
   const handleStep3Submit = (values: step3FormValues) =>
-    submitSidekickStep3Action(values, faqs, step3Form, setFaqs, setIsLoading, setStepValidationState);
+    submitSidekickStep3Action(
+      values,
+      faqs,
+      step3Form,
+      setFaqs,
+      setIsLoading,
+      setStepValidationState,
+    );
 
   const handleStep4Submit = (values: step4FormValues) =>
-    submitSidekickStep4Action(values, setIsLoading, setStepValidationState, router);
+    submitSidekickStep4Action(
+      values,
+      setIsLoading,
+      setStepValidationState,
+      router,
+    );
 
   const handleDeleteFaq = (faqId: string) =>
     deleteFaqAction(faqId, faqs, setFaqs, setIsLoading);
 
-  const watchedToneType = useWatch({ control: step4Form.control, name: "toneType" });
+  const watchedSellDescription = useWatch({
+    control: step2Form.control,
+    name: "sellDescription",
+  });
+  const watchedToneType = useWatch({
+    control: step4Form.control,
+    name: "toneType",
+  });
 
   const handleBack = () => {
-    setActiveStep(prev => prev - 1);
+    setActiveStep((prev) => prev - 1);
   };
 
   const handleNext = () => {
-    setActiveStep(prev => prev + 1);
+    setActiveStep((prev) => prev + 1);
+  };
+
+  const isStepValid = (step: number) => {
+    if (step === 1) {
+      return offers.length > 0 && hasStoredMainOffering;
+    }
+
+    return stepValidationState[step];
   };
 
   if (isInitializing) {
@@ -619,7 +671,7 @@ export default function SidekickOnboardingPage() {
               }
 
               if (newStep === activeStep + 1) {
-                const isValid = stepValidationState[activeStep];
+                const isValid = isStepValid(activeStep);
                 if (isValid) {
                   setActiveStep(newStep);
                 }
@@ -633,11 +685,11 @@ export default function SidekickOnboardingPage() {
                 step={step.id}
                 disabled={
                   step.id > activeStep + 1 ||
-                  (step.id > activeStep && !stepValidationState[activeStep])
+                  (step.id > activeStep && !isStepValid(activeStep))
                 }
                 completed={activeStep > step.id}
                 loading={isLoading && step.id === activeStep}
-                className="relative flex-1 flex-col!"
+                className="relative flex-1 !flex-col"
               >
                 <StepperTrigger className="flex-col gap-3">
                   <StepperIndicator />
@@ -659,7 +711,9 @@ export default function SidekickOnboardingPage() {
                   onSubmit={step0Form.handleSubmit(handleStep0Submit)}
                   className="space-y-6"
                 >
-                  <h2 className="text-xl font-semibold font-heading">Offer Links</h2>
+                  <h2 className="text-xl font-semibold font-heading">
+                    Offer Links
+                  </h2>
 
                   <p className="text-muted-foreground">
                     Add links so Sidekick can learn your offer details.
@@ -723,167 +777,185 @@ export default function SidekickOnboardingPage() {
             )}
 
             {activeStep === 1 && (
-              <Form {...step1Form}>
-                <form
-                  onSubmit={step1Form.handleSubmit(handleStep1Submit)}
-                  className="space-y-6"
-                >
-                  <h2 className="text-xl font-semibold font-heading">Offers</h2>
-
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-xl font-semibold font-heading">
+                    What You Sell
+                  </h2>
                   <p className="text-muted-foreground">
-                    Add your offers so Sidekick can answer clearly and score leads better.
+                    Add your offers and explain the main offer so Sidekick can
+                    reply with the right details.
                   </p>
+                </div>
 
-                  {offers.length > 0 && (
-                    <div className="border rounded-lg p-4 space-y-3">
-                      <h3 className="font-medium">Your Offers</h3>
-                      <div className="space-y-2">
-                        {offers.map((offer, index) => (
-                          <div
-                            key={index}
-                            className="border rounded p-3 flex justify-between items-center"
-                          >
-                            <div>
-                              <p className="font-medium">{offer.name}</p>
-                              <p className="text-sm text-muted-foreground truncate max-w-md">
-                                {offer.content}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              {offer.value && (
-                                <p className="font-medium">${offer.value}</p>
-                              )}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                                onClick={() => deleteOfferAction(offer.id, index, offers, setOffers, setIsLoading)}
-                              >
-                                Delete
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <FormField
-                    control={step1Form.control}
-                    name="offerName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Offer Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., Basic Package" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={step1Form.control}
-                    name="offerContent"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Offer Description</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Brief description of what's included"
-                            {...field}
-                            rows={3}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={step1Form.control}
-                    name="offerValue"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Value ($)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="e.g., 997"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="flex justify-between">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleBack}
-                    >
-                      Back
-                    </Button>
-                    <div className="space-x-2">
-                      {offers.length > 0 && (
-                        <Button
-                          type="button"
-                          variant="default"
-                          onClick={() => handleNext()}
+                {offers.length > 0 && (
+                  <div className="border rounded-lg p-4 space-y-3">
+                    <h3 className="font-medium">Your Offers</h3>
+                    <div className="space-y-2">
+                      {offers.map((offer, index) => (
+                        <div
+                          key={offer.id || index}
+                          className="border rounded p-3 flex justify-between items-center"
                         >
-                          Next
-                        </Button>
+                          <div>
+                            <p className="font-medium">{offer.name}</p>
+                            <p className="text-sm text-muted-foreground truncate max-w-md">
+                              {offer.content}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            {offer.value ? (
+                              <p className="font-medium">${offer.value}</p>
+                            ) : null}
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                              onClick={() =>
+                                deleteOfferAction(
+                                  offer.id,
+                                  index,
+                                  offers,
+                                  setOffers,
+                                  setIsLoading,
+                                )
+                              }
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <Form {...step1Form}>
+                  <form
+                    onSubmit={step1Form.handleSubmit(handleStep1Submit)}
+                    className="space-y-4 rounded-lg border p-4"
+                  >
+                    <div>
+                      <h3 className="font-medium">Add an offer</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Keep this tight. One offer is enough to continue.
+                      </p>
+                    </div>
+
+                    <FormField
+                      control={step1Form.control}
+                      name="offerName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Offer Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="e.g., Basic Package"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
+                    />
+
+                    <FormField
+                      control={step1Form.control}
+                      name="offerContent"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Offer Description</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Brief description of what's included"
+                              {...field}
+                              rows={3}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={step1Form.control}
+                      name="offerValue"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Value ($)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="e.g., 997"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="flex justify-end">
                       <Button type="submit" disabled={isLoading}>
                         {isLoading ? "Adding..." : "Add Offer"}
                       </Button>
                     </div>
-                  </div>
-                </form>
-              </Form>
+                  </form>
+                </Form>
+
+                <Form {...step2Form}>
+                  <form
+                    onSubmit={step2Form.handleSubmit(handleStep2Submit)}
+                    className="space-y-6"
+                  >
+                    <FormField
+                      control={step2Form.control}
+                      name="sellDescription"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Your Offering</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="e.g., 8-week cohort-based course for SaaS founders on monetization"
+                              {...field}
+                              rows={4}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            More detail here means better replies later.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="flex justify-between">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleBack}
+                        disabled={isLoading}
+                      >
+                        Back
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={
+                          isLoading ||
+                          offers.length === 0 ||
+                          !watchedSellDescription?.trim()
+                        }
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </div>
             )}
 
             {activeStep === 2 && (
-              <Form {...step2Form}>
-                <form
-                  onSubmit={step2Form.handleSubmit(handleStep2Submit)}
-                  className="space-y-6"
-                >
-                  <h2 className="text-xl font-semibold font-heading">What You Sell</h2>
-
-                  <p className="text-muted-foreground">
-                    Explain your main offer so Sidekick can reply with the right details.
-                  </p>
-
-                  <FormField
-                    control={step2Form.control}
-                    name="sellDescription"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Your Offering</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="e.g., 8-week cohort-based course for SaaS founders on monetization"
-                            {...field}
-                            rows={4}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          More detail here means better replies later.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <StepButtons onBack={handleBack} isLoading={isLoading} />
-                </form>
-              </Form>
-            )}
-
-            {activeStep === 3 && (
               <div className="space-y-6">
                 <div className="mb-4">
                   <h3 className="text-lg font-medium">
@@ -995,7 +1067,7 @@ export default function SidekickOnboardingPage() {
               </div>
             )}
 
-            {activeStep === 4 && (
+            {activeStep === 3 && (
               <Form {...step4Form}>
                 <form
                   onSubmit={step4Form.handleSubmit(handleStep4Submit)}
@@ -1035,16 +1107,18 @@ export default function SidekickOnboardingPage() {
                                 </FormControl>
                                 <FormLabel
                                   htmlFor={`tone-${option}`}
-                                  className={`border rounded-lg p-3 w-full flex items-center gap-2 cursor-pointer transition-all ${field.value === option
-                                    ? "border-primary bg-primary/10"
-                                    : "border-border hover:border-muted-foreground"
-                                    }`}
+                                  className={`border rounded-lg p-3 w-full flex items-center gap-2 cursor-pointer transition-all ${
+                                    field.value === option
+                                      ? "border-primary bg-primary/10"
+                                      : "border-border hover:border-muted-foreground"
+                                  }`}
                                 >
                                   <div
-                                    className={`size-4 rounded-full border ${field.value === option
-                                      ? "border-4 border-primary"
-                                      : "border border-muted-foreground"
-                                      }`}
+                                    className={`size-4 rounded-full border ${
+                                      field.value === option
+                                        ? "border-4 border-primary"
+                                        : "border border-muted-foreground"
+                                    }`}
                                   ></div>
                                   <span>{option}</span>
                                 </FormLabel>

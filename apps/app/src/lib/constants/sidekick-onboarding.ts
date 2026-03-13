@@ -5,25 +5,16 @@ export const sidekickSteps = [
   },
   {
     id: 1,
-    name: "Your Offers",
-  },
-  {
-    id: 2,
     name: "What You Sell",
   },
   {
-    id: 3,
+    id: 2,
     name: "Common Questions",
   },
   {
-    id: 4,
+    id: 3,
     name: "Your Voice",
   },
 ];
 
-export const tone_options = [
-  "Friendly",
-  "Direct",
-  "Like Me",
-  "Custom",
-];
+export const tone_options = ["Friendly", "Direct", "Like Me", "Custom"];
