@@ -52,7 +52,7 @@ function getLeadParticipant(
 }
 
 function isBusinessMessage(message: InstagramMessage, businessUsername: string) {
-  return message.from.username === businessUsername;
+  return message.from?.username === businessUsername;
 }
 
 function getTextMessages(messages: InstagramMessage[]) {

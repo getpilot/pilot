@@ -375,18 +375,6 @@ async function submitStep2Action(
   }
 }
 
-function formatPreviewTimestamp(timestamp: string) {
-  const date = new Date(timestamp);
-  if (Number.isNaN(date.getTime())) {
-    return "Now";
-  }
-
-  return date.toLocaleTimeString([], {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
 function OnboardingPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -519,7 +507,8 @@ function OnboardingPageContent() {
       activeStep !== 1 ||
       !instagramConnection.connected ||
       instagramPreview ||
-      isPreparingPreview
+      isPreparingPreview ||
+      previewError
     ) {
       return;
     }
@@ -559,6 +548,7 @@ function OnboardingPageContent() {
     instagramConnection.connected,
     instagramPreview,
     isPreparingPreview,
+    previewError,
   ]);
 
   const handleStep0Submit = (values: Step0FormValues) =>

@@ -6,43 +6,22 @@ import {
   exchangeLongLivedInstagramToken,
   fetchInstagramProfile,
 } from "@pilot/instagram";
+import {
+  getInstagramAppBaseUrl,
+  getInstagramCallbackUrl,
+  normalizeInstagramReturnTo,
+} from "@/lib/instagram-auth";
 
 const INSTAGRAM_CLIENT_ID = process.env.INSTAGRAM_CLIENT_ID;
 const INSTAGRAM_CLIENT_SECRET = process.env.INSTAGRAM_CLIENT_SECRET;
 const INSTAGRAM_RETURN_TO_COOKIE = "pilot_instagram_return_to";
-const APP_URL =
-  process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? null;
-
-function normalizeReturnTo(value: string | null) {
-  if (
-    !value ||
-    !value.startsWith("/") ||
-    value.startsWith("//") ||
-    value.includes("\\")
-  ) {
-    return "/settings";
-  }
-
-  try {
-    // Placeholder origin used only to parse a relative in-app return path safely.
-    const url = new URL(value, "http://localhost.invalid");
-    if (url.origin !== "http://localhost.invalid") {
-      return "/settings";
-    }
-
-    return `${url.pathname}${url.search}${url.hash}`;
-  } catch {
-    return "/settings";
-  }
-}
 
 function buildRedirectUrl(
   request: Request,
   returnTo: string,
   params: Record<string, string>,
 ) {
-  const baseUrl = APP_URL ? APP_URL.replace(/\/$/, "") : new URL(request.url).origin;
-  const url = new URL(returnTo, baseUrl);
+  const url = new URL(returnTo, getInstagramAppBaseUrl(request));
 
   Object.entries(params).forEach(([key, value]) => {
     url.searchParams.set(key, value);
@@ -51,16 +30,11 @@ function buildRedirectUrl(
   return url.toString();
 }
 
-function getInstagramCallbackUrl(request: Request) {
-  const baseUrl = APP_URL ? APP_URL.replace(/\/$/, "") : new URL(request.url).origin;
-  return new URL("/api/auth/instagram/callback", baseUrl).toString();
-}
-
 export async function GET(request: Request) {
   const redirectUri = getInstagramCallbackUrl(request);
   const { searchParams } = new URL(request.url);
   const cookieStore = await cookies();
-  const returnTo = normalizeReturnTo(
+  const returnTo = normalizeInstagramReturnTo(
     cookieStore.get(INSTAGRAM_RETURN_TO_COOKIE)?.value ?? null,
   );
   cookieStore.delete(INSTAGRAM_RETURN_TO_COOKIE);
