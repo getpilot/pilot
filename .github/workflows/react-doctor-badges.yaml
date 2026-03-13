@@ -15,6 +15,9 @@ on:
 permissions:
   contents: write
 
+env:
+  REACT_DOCTOR_VERSION: 0.0.30
+
 jobs:
   update-badges:
     name: Refresh React Doctor badges
@@ -31,11 +34,15 @@ jobs:
 
       - name: Run React Doctor for app
         shell: bash
-        run: npx -y react-doctor@latest . --project app --yes --no-ami > react-doctor-app.log 2>&1
+        run: |
+          set -o pipefail
+          npx -y react-doctor@${REACT_DOCTOR_VERSION} . --project app --yes | tee react-doctor-app.log
 
       - name: Run React Doctor for web
         shell: bash
-        run: npx -y react-doctor@latest . --project web --yes --no-ami > react-doctor-web.log 2>&1
+        run: |
+          set -o pipefail
+          npx -y react-doctor@${REACT_DOCTOR_VERSION} . --project web --yes | tee react-doctor-web.log
 
       - name: Update README badges
         shell: bash
@@ -43,19 +50,27 @@ jobs:
           node <<'EOF'
           const fs = require("fs");
 
-          const appLog = fs.readFileSync("react-doctor-app.log", "utf8");
-          const webLog = fs.readFileSync("react-doctor-web.log", "utf8");
+          const ANSI_PATTERN = /\u001B\[[0-9;]*m/g;
+
+          const appLog = fs.readFileSync("react-doctor-app.log", "utf8").replaceAll(ANSI_PATTERN, "");
+          const webLog = fs.readFileSync("react-doctor-web.log", "utf8").replaceAll(ANSI_PATTERN, "");
 
           function extractShareUrl(log, project) {
             const match = log.match(new RegExp(`https://www\\.react\\.doctor/share\\?p=${project}[^\\s]*`));
-            if (!match) {
-              throw new Error(`Could not find React Doctor share URL for ${project}`);
+            if (match) {
+              return match[0];
             }
-            return match[0];
-          }
 
-          function toBadge(shareUrl) {
-            return shareUrl.replace("/share?", "/share/badge?");
+            const scoreMatch = log.match(/(\d+)\s*\/\s*100/);
+            if (!scoreMatch) {
+              throw new Error(`Could not find React Doctor score for ${project}`);
+            }
+
+            const warningsMatch = log.match(/⚠\s*(\d+)\s+warnings?\s+across\s+\d+\/(\d+)\s+files/i);
+            const warningCount = warningsMatch ? warningsMatch[1] : "0";
+            const affectedFileCount = warningsMatch ? warningsMatch[2] : "0";
+
+            return `https://www.react.doctor/share?p=${project}&s=${scoreMatch[1]}&w=${warningCount}&f=${affectedFileCount}`;
           }
 
           function replaceOnce(contents, pattern, nextLine, filePath) {
@@ -115,6 +130,15 @@ jobs:
             fs.writeFileSync(file.path, contents);
           }
           EOF
+
+      - name: Print React Doctor logs on failure
+        if: failure()
+        shell: bash
+        run: |
+          echo "react-doctor-app.log"
+          cat react-doctor-app.log || true
+          echo "react-doctor-web.log"
+          cat react-doctor-web.log || true
 
       - name: Commit badge updates
         uses: stefanzweifel/git-auto-commit-action@v7
