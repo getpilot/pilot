@@ -892,14 +892,8 @@ function OnboardingPageContent() {
                                   : "bg-background text-foreground"
                               }`}
                             >
-                              <p className="text-xs font-medium opacity-70">
-                                {message.sender}
-                              </p>
                               <p className="mt-1 text-sm leading-relaxed">
                                 {message.text}
-                              </p>
-                              <p className="mt-2 text-[11px] opacity-60">
-                                {formatPreviewTimestamp(message.timestamp)}
                               </p>
                             </div>
                           </div>

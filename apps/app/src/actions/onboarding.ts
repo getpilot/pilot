@@ -51,21 +51,62 @@ function getLeadParticipant(
   });
 }
 
-function formatPreviewMessages(params: {
-  businessUsername: string;
-  leadName: string;
-  messages: InstagramMessage[];
-}): OnboardingPreviewMessage[] {
-  return params.messages
+function isBusinessMessage(message: InstagramMessage, businessUsername: string) {
+  return message.from.username === businessUsername;
+}
+
+function getTextMessages(messages: InstagramMessage[]) {
+  return messages
     .filter(
       (message) =>
         typeof message.message === "string" &&
         message.message.trim().length > 0,
     )
-    .slice(0, 6)
+    .sort((left, right) => {
+      const leftTime = new Date(left.created_time).getTime();
+      const rightTime = new Date(right.created_time).getTime();
+
+      if (Number.isNaN(leftTime) || Number.isNaN(rightTime)) {
+        return 0;
+      }
+
+      return leftTime - rightTime;
+    });
+}
+
+function buildPreviewMessages(params: {
+  businessUsername: string;
+  leadName: string;
+  messages: InstagramMessage[];
+}): OnboardingPreviewMessage[] {
+  const textMessages = getTextMessages(params.messages);
+
+  const lastIncomingIndex = [...textMessages]
+    .map((message, index) => ({ message, index }))
     .reverse()
+    .find(
+      ({ message }) => !isBusinessMessage(message, params.businessUsername),
+    )?.index;
+
+  if (lastIncomingIndex === undefined) {
+    return [];
+  }
+
+  const hasBusinessReplyBeforeLatestIncoming = textMessages
+    .slice(0, lastIncomingIndex)
+    .some((message) => isBusinessMessage(message, params.businessUsername));
+
+  if (!hasBusinessReplyBeforeLatestIncoming) {
+    return [];
+  }
+
+  return textMessages
+    .slice(Math.max(0, lastIncomingIndex - 5), lastIncomingIndex + 1)
     .map((message) => {
-      const isBusinessReply = message.from.username === params.businessUsername;
+      const isBusinessReply = isBusinessMessage(
+        message,
+        params.businessUsername,
+      );
 
       return {
         direction: isBusinessReply ? "outgoing" : "incoming",
@@ -127,6 +168,45 @@ async function buildReplyPreview(params: {
     console.error("Error generating onboarding preview reply:", error);
     return params.fallbackReply;
   }
+}
+
+function selectPreviewConversation(
+  conversations: InstagramConversation[],
+  integration: {
+    appScopedUserId: string | null;
+    instagramUserId: string;
+    username: string;
+  },
+  userName?: string | null,
+) {
+  for (const conversation of conversations) {
+    if (!Array.isArray(conversation.messages?.data)) {
+      continue;
+    }
+
+    const leadParticipant = getLeadParticipant(conversation, integration) ?? {
+      id: "lead",
+      username: userName ? `${userName}'s lead` : "Lead",
+    };
+
+    const previewMessages = buildPreviewMessages({
+      businessUsername: integration.username,
+      leadName: leadParticipant.username,
+      messages: conversation.messages.data,
+    });
+
+    if (previewMessages.length === 0) {
+      continue;
+    }
+
+    return {
+      conversation,
+      leadParticipant,
+      previewMessages,
+    };
+  }
+
+  return null;
 }
 
 export async function getUserData() {
@@ -298,18 +378,17 @@ export async function prepareInstagramPreview() {
       .filter((conversation) => Array.isArray(conversation.messages?.data))
       .slice(0, 12);
 
-    const previewConversation = recentConversations.find((conversation) => {
-      return (
-        Array.isArray(conversation.messages?.data) &&
-        conversation.messages.data.some(
-          (message) =>
-            typeof message.message === "string" &&
-            message.message.trim().length > 0,
-        )
-      );
-    });
+    const previewSelection = selectPreviewConversation(
+      recentConversations,
+      {
+        appScopedUserId: integration.appScopedUserId,
+        instagramUserId: integration.instagramUserId,
+        username: integration.username,
+      },
+      userData?.name,
+    );
 
-    if (!previewConversation?.messages?.data?.length) {
+    if (!previewSelection) {
       return {
         success: true,
         connected: true,
@@ -317,28 +396,7 @@ export async function prepareInstagramPreview() {
       } as const;
     }
 
-    const leadParticipant = getLeadParticipant(previewConversation, {
-      appScopedUserId: integration.appScopedUserId,
-      instagramUserId: integration.instagramUserId,
-      username: integration.username,
-    }) ?? {
-      id: "lead",
-      username: userData?.name ? `${userData.name}'s lead` : "Lead",
-    };
-
-    const previewMessages = formatPreviewMessages({
-      businessUsername: integration.username,
-      leadName: leadParticipant.username,
-      messages: previewConversation.messages.data,
-    });
-
-    if (previewMessages.length === 0) {
-      return {
-        success: true,
-        connected: true,
-        data: fallback,
-      } as const;
-    }
+    const { leadParticipant, previewMessages } = previewSelection;
 
     const conversationContext = buildConversationContext(previewMessages);
     const fallbackReply =
