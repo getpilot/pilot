@@ -208,7 +208,7 @@ export async function fetchRecentInstagramMedia(params: {
     method: "GET",
     url: loginGraphUrl(mediaPath),
     params: {
-      fields: "id,media_type,media_url,thumbnail_url,permalink,timestamp",
+      fields: "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp",
       limit,
       access_token: params.accessToken,
     },
@@ -233,7 +233,7 @@ export async function fetchInstagramMediaById(params: {
     ),
     params: {
       fields:
-        "id,media_type,media_url,thumbnail_url,permalink,timestamp,media_product_type",
+        "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,media_product_type",
       access_token: params.accessToken,
     },
   });
