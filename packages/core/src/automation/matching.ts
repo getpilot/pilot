@@ -1,5 +1,5 @@
-import { automation, automationActionLog } from "@pilot/db/schema";
-import { and, eq, gt, isNull, or } from "drizzle-orm";
+import { automation, automationActionLog, automationPost } from "@pilot/db/schema";
+import { and, eq, gt, inArray, isNull, or } from "drizzle-orm";
 
 export type AutomationRecord = typeof automation.$inferSelect;
 
@@ -24,10 +24,31 @@ export async function checkTriggerMatch(params: {
   messageText: string;
   userId: string;
   scope?: "dm" | "comment";
+  postId?: string | null;
 }): Promise<AutomationRecord | null> {
-  const { dbClient, messageText, userId, scope = "dm" } = params;
+  const { dbClient, messageText, userId, scope = "dm", postId } = params;
   const activeAutomations = await getActiveAutomations(dbClient, userId);
   const lowerMessage = messageText.toLowerCase();
+  const postIdsByAutomationId = new Map<string, string>();
+
+  if (scope === "comment" && activeAutomations.length > 0) {
+    const scopedPosts = await dbClient
+      .select({
+        automationId: automationPost.automationId,
+        postId: automationPost.postId,
+      })
+      .from(automationPost)
+      .where(
+        inArray(
+          automationPost.automationId,
+          activeAutomations.map((record) => record.id),
+        ),
+      );
+
+    for (const scopedPost of scopedPosts) {
+      postIdsByAutomationId.set(scopedPost.automationId, scopedPost.postId);
+    }
+  }
 
   for (const automationRecord of activeAutomations) {
     const trigger = automationRecord.triggerWord?.toLowerCase?.() ?? "";
@@ -40,8 +61,12 @@ export async function checkTriggerMatch(params: {
       triggerScope === "both" ||
       triggerScope === scope ||
       (scope === "dm" && !triggerScope);
+    const postMatches =
+      scope !== "comment" ||
+      !postIdsByAutomationId.has(automationRecord.id) ||
+      postIdsByAutomationId.get(automationRecord.id) === postId;
 
-    if (scopeMatches && lowerMessage.includes(trigger)) {
+    if (scopeMatches && postMatches && lowerMessage.includes(trigger)) {
       return automationRecord;
     }
   }

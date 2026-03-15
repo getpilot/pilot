@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import {
+  fetchInstagramMediaById,
   validateInstagramToken,
   fetchRecentInstagramMedia,
 } from "@pilot/instagram";
@@ -39,11 +40,8 @@ export async function getInstagramIntegration() {
   }
 
   try {
-    const validationUserId =
-      integration.appScopedUserId || integration.instagramUserId;
     const isValid = await validateInstagramToken({
       accessToken: integration.accessToken,
-      igUserId: validationUserId,
     });
     if (!isValid) {
       return { connected: false, error: "Invalid token" };
@@ -203,7 +201,6 @@ export async function getRecentInstagramPosts(limit: number = 5) {
 
   const items = await fetchRecentInstagramMedia({
     accessToken: integration.accessToken,
-    igUserId: integration.instagramUserId,
     limit,
   });
 
@@ -216,4 +213,29 @@ export async function getRecentInstagramPosts(limit: number = 5) {
     permalink?: string;
     timestamp?: string;
   }>;
+}
+
+export async function getInstagramPostById(postId: string) {
+  const user = await getUser();
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const normalizedPostId = postId.trim();
+  if (!normalizedPostId) {
+    return null;
+  }
+
+  const db = await getRLSDb();
+  const integration = await db.query.instagramIntegration.findFirst({
+    where: eq(instagramIntegration.userId, user.id),
+  });
+  if (!integration) {
+    throw new Error("Instagram not connected");
+  }
+
+  return fetchInstagramMediaById({
+    accessToken: integration.accessToken,
+    mediaId: normalizedPostId,
+  });
 }

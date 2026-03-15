@@ -50,7 +50,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@pilot/ui/components/select";
-import { getRecentInstagramPosts } from "@/actions/instagram";
+import {
+  getInstagramPostById,
+  getRecentInstagramPosts,
+} from "@/actions/instagram";
 import { PostPicker } from "@/components/automations/post-picker";
 import { GenericTemplateBuilder } from "@/components/automations/generic-template-builder";
 import { DEFAULT_PUBLIC_COMMENT_REPLY } from "@pilot/core/automation/constants";
@@ -73,9 +76,30 @@ async function loadAutomationData(
   automationId: string,
   router: { push: (url: string) => void },
   setAutomation: (data: Automation | null) => void,
-  setFormData: (val: EditAutomationFormData | ((prev: EditAutomationFormData) => EditAutomationFormData)) => void,
+  setFormData: (
+    val:
+      | EditAutomationFormData
+      | ((prev: EditAutomationFormData) => EditAutomationFormData),
+  ) => void,
   setIsLoading: (v: boolean) => void,
-  setRecentPosts: (posts: Array<{ id: string; caption?: string; media_url?: string; media_type?: string; thumbnail_url?: string }>) => void
+  setRecentPosts: (
+    posts: Array<{
+      id: string;
+      caption?: string;
+      media_url?: string;
+      media_type?: string;
+      thumbnail_url?: string;
+    }>,
+  ) => void,
+  setSelectedPost: (
+    post: {
+      id: string;
+      caption?: string;
+      media_url?: string;
+      media_type?: string;
+      thumbnail_url?: string;
+    } | null,
+  ) => void,
 ) {
   try {
     const data = await getAutomation(automationId);
@@ -109,12 +133,22 @@ async function loadAutomationData(
       const existingPostId = await getAutomationPostId(automationId);
       if (existingPostId) {
         setFormData((prev) => ({ ...prev, postId: existingPostId }));
+        const [posts, selectedPost] = await Promise.all([
+          getRecentInstagramPosts(12).catch(() => []),
+          getInstagramPostById(existingPostId).catch(() => null),
+        ]);
+        setRecentPosts(posts);
+        setSelectedPost(selectedPost);
+      } else {
+        const posts = await getRecentInstagramPosts(12).catch(() => []);
+        setRecentPosts(posts);
+        setSelectedPost(null);
       }
-    } catch { }
-    try {
-      const posts = await getRecentInstagramPosts(6);
+    } catch {
+      const posts = await getRecentInstagramPosts(12).catch(() => []);
       setRecentPosts(posts);
-    } catch { }
+      setSelectedPost(null);
+    }
   } catch {
     toast.error("Couldn't load automation. Try again?");
     router.push("/automations");
@@ -127,7 +161,7 @@ async function handleSubmitAction(
   automationId: string,
   formData: EditAutomationFormData,
   setIsSubmitting: (v: boolean) => void,
-  router: { push: (url: string) => void }
+  router: { push: (url: string) => void },
 ) {
   setIsSubmitting(true);
   try {
@@ -152,7 +186,7 @@ async function handleSubmitAction(
     router.push("/automations");
   } catch (error) {
     toast.error(
-      error instanceof Error ? error.message : "Failed to update automation"
+      error instanceof Error ? error.message : "Failed to update automation",
     );
   } finally {
     setIsSubmitting(false);
@@ -162,7 +196,7 @@ async function handleSubmitAction(
 async function handleDeleteAction(
   automationId: string,
   setIsDeleting: (v: boolean) => void,
-  router: { push: (url: string) => void }
+  router: { push: (url: string) => void },
 ) {
   setIsDeleting(true);
   try {
@@ -171,7 +205,7 @@ async function handleDeleteAction(
     router.push("/automations");
   } catch (error) {
     toast.error(
-      error instanceof Error ? error.message : "Failed to delete automation"
+      error instanceof Error ? error.message : "Failed to delete automation",
     );
   } finally {
     setIsDeleting(false);
@@ -196,6 +230,13 @@ export default function EditAutomationPage() {
       thumbnail_url?: string;
     }>
   >([]);
+  const [selectedPost, setSelectedPost] = useState<{
+    id: string;
+    caption?: string;
+    media_url?: string;
+    media_type?: string;
+    thumbnail_url?: string;
+  } | null>(null);
 
   const [formData, setFormData] = useState<EditAutomationFormData>({
     title: "",
@@ -212,7 +253,15 @@ export default function EditAutomationPage() {
   });
 
   useEffect(() => {
-    loadAutomationData(automationId, router, setAutomation, setFormData, setIsLoading, setRecentPosts);
+    loadAutomationData(
+      automationId,
+      router,
+      setAutomation,
+      setFormData,
+      setIsLoading,
+      setRecentPosts,
+      setSelectedPost,
+    );
   }, [automationId, router]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -220,11 +269,12 @@ export default function EditAutomationPage() {
     handleSubmitAction(automationId, formData, setIsSubmitting, router);
   };
 
-  const handleDelete = () => handleDeleteAction(automationId, setIsDeleting, router);
+  const handleDelete = () =>
+    handleDeleteAction(automationId, setIsDeleting, router);
 
   const handleInputChange = <K extends keyof EditAutomationFormData>(
     field: K,
-    value: EditAutomationFormData[K]
+    value: EditAutomationFormData[K],
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -352,7 +402,7 @@ export default function EditAutomationPage() {
                 onValueChange={(v) =>
                   handleInputChange(
                     "triggerScope",
-                    v as "dm" | "comment" | "both"
+                    v as "dm" | "comment" | "both",
                   )
                 }
               >
@@ -366,7 +416,8 @@ export default function EditAutomationPage() {
                 </SelectContent>
               </Select>
               <p className="text-sm text-muted-foreground">
-                Choose where this applies. Comments can also use private replies.
+                Choose where this applies. Comments can also use private
+                replies.
               </p>
             </div>
 
@@ -375,6 +426,7 @@ export default function EditAutomationPage() {
                 value={formData.postId}
                 onChange={(v) => handleInputChange("postId", v)}
                 posts={recentPosts}
+                selectedPost={selectedPost}
               />
             )}
 
@@ -402,9 +454,7 @@ export default function EditAutomationPage() {
         <Card>
           <CardHeader>
             <CardTitle>Reply Method</CardTitle>
-            <CardDescription>
-              Choose how replies are generated.
-            </CardDescription>
+            <CardDescription>Choose how replies are generated.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <RadioGroup
@@ -412,7 +462,7 @@ export default function EditAutomationPage() {
               onValueChange={(value) =>
                 handleInputChange(
                   "responseType",
-                  value as "fixed" | "ai_prompt" | "generic_template"
+                  value as "fixed" | "ai_prompt" | "generic_template",
                 )
               }
             >
@@ -540,7 +590,7 @@ export default function EditAutomationPage() {
                       variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal",
-                        !formData.expiresAt && "text-muted-foreground"
+                        !formData.expiresAt && "text-muted-foreground",
                       )}
                     >
                       <CalendarIcon className="size-4" />

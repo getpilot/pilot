@@ -52,7 +52,13 @@ export type CommentChange = {
   field: string;
   value?: {
     id?: string;
+    comment_id?: string;
     text?: string;
-    from?: { id?: string };
+    from?: { id?: string; username?: string };
+    media?: {
+      id?: string;
+      media_product_type?: string;
+      original_media_id?: string;
+    };
   };
 };

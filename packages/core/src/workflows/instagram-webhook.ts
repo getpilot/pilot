@@ -32,6 +32,8 @@ type InstagramWebhookPayload = {
   object: string;
   entry: Array<{
     id: string;
+    field?: string;
+    value?: unknown;
     messaging?: Array<{
       sender: { id: string };
       recipient: { id: string };
@@ -156,13 +158,28 @@ async function processCommentChanges(params: {
 }) {
   for (const change of params.changes) {
     const value = change?.value;
-    if (change?.field !== "comments" || !value || typeof value !== "object") {
+    if (
+      (change?.field !== "comments" && change?.field !== "live_comments") ||
+      !value ||
+      typeof value !== "object"
+    ) {
       continue;
     }
 
-    const commentId = typeof value.id === "string" ? value.id : undefined;
+    const commentId =
+      typeof value.id === "string"
+        ? value.id
+        : typeof value.comment_id === "string"
+          ? value.comment_id
+          : undefined;
     const commenterId = typeof value.from?.id === "string" ? value.from.id : undefined;
     const messageText = typeof value.text === "string" ? value.text : "";
+    const mediaId =
+      typeof value.media?.id === "string"
+        ? value.media.id
+        : typeof value.media?.original_media_id === "string"
+          ? value.media.original_media_id
+          : undefined;
 
     if (!params.igUserId || !commenterId || !messageText) {
       continue;
@@ -188,6 +205,7 @@ async function processCommentChanges(params: {
       messageText,
       userId: integration.userId,
       scope: "comment",
+      postId: mediaId,
     });
 
     if (!matchedAutomation || !commentId) {
@@ -543,7 +561,17 @@ export async function processInstagramWebhook(params: {
   const entry = params.payload.entry?.[0];
   const changes = Array.isArray(entry?.changes)
     ? (entry.changes as Array<CommentChange>)
-    : undefined;
+    : typeof entry?.field === "string"
+      ? ([
+          {
+            field: entry.field,
+            value:
+              entry.value && typeof entry.value === "object"
+                ? (entry.value as CommentChange["value"])
+                : undefined,
+          },
+        ] as Array<CommentChange>)
+      : undefined;
 
   if (changes && changes.length > 0) {
     await processCommentChanges({

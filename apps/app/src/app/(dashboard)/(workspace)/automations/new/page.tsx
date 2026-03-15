@@ -102,7 +102,7 @@ export default function NewAutomationPage() {
   useEffect(() => {
     (async () => {
       try {
-        const posts = await getRecentInstagramPosts(6);
+        const posts = await getRecentInstagramPosts(12);
         setRecentPosts(posts);
       } catch {
         // ignore if not connected

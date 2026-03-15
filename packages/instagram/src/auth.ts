@@ -1,6 +1,5 @@
 import {
   authUrl,
-  facebookGraphUrl,
   IG_API_VERSION,
   instagramRequest,
   loginGraphUrl,
@@ -13,7 +12,7 @@ import type {
 } from "./types";
 
 const DEFAULT_SCOPE =
-  "instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish,instagram_business_manage_insights";
+  "instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish";
 
 export function buildInstagramAuthUrl(params: {
   clientId: string;
@@ -207,10 +206,9 @@ export async function fetchRecentInstagramMedia(params: {
     : `/${IG_API_VERSION}/me/media`;
   const response = await instagramRequest<{ data?: unknown }>({
     method: "GET",
-    url: facebookGraphUrl(mediaPath),
+    url: loginGraphUrl(mediaPath),
     params: {
-      fields:
-        "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp",
+      fields: "id,media_type,media_url,thumbnail_url,permalink,timestamp",
       limit,
       access_token: params.accessToken,
     },
@@ -222,6 +220,29 @@ export async function fetchRecentInstagramMedia(params: {
 
   const items = response.data?.data;
   return Array.isArray(items) ? (items as InstagramMediaItem[]) : [];
+}
+
+export async function fetchInstagramMediaById(params: {
+  accessToken: string;
+  mediaId: string;
+}): Promise<InstagramMediaItem | null> {
+  const response = await instagramRequest<InstagramMediaItem>({
+    method: "GET",
+    url: loginGraphUrl(
+      `/${IG_API_VERSION}/${encodeURIComponent(params.mediaId)}`,
+    ),
+    params: {
+      fields:
+        "id,media_type,media_url,thumbnail_url,permalink,timestamp,media_product_type",
+      access_token: params.accessToken,
+    },
+  });
+
+  if (response.status < 200 || response.status >= 300 || !response.data?.id) {
+    return null;
+  }
+
+  return response.data;
 }
 
 function extractInstagramErrorDetail(data: unknown): string | null {

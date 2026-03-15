@@ -32,6 +32,7 @@ export type InstagramMediaItem = {
   thumbnail_url?: string;
   permalink?: string;
   timestamp?: string;
+  media_product_type?: string;
 };
 
 export type InstagramLongLivedToken = {
