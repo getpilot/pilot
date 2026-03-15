@@ -31,7 +31,10 @@ export async function fetchConversations(params: {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-      params: { fields: "participants,updated_time" },
+      params: {
+        platform: "instagram",
+        fields: "id,participants,updated_time",
+      },
     });
     return { status: res.status, data: { data: res.data?.data } };
   } catch {
@@ -46,20 +49,19 @@ export async function fetchConversationMessages(params: {
 }): Promise<InstagramMessagesResponse> {
   const { accessToken, conversationId, limit = DEFAULT_MESSAGE_LIMIT } = params;
   try {
-    const res = await instagramRequest<{ data?: unknown }>({
+    const res = await instagramRequest<{ messages?: { data?: unknown } }>({
       method: "GET",
       url: graphUrl(
-        `/${IG_API_VERSION}/${encodeURIComponent(conversationId)}/messages`,
+        `/${IG_API_VERSION}/${encodeURIComponent(conversationId)}`,
       ),
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
       params: {
-        fields: "from{id,username},message,created_time",
-        limit,
+        fields: `messages.limit(${limit}){id,from{id,username},to{id,username},message,created_time}`,
       },
     });
-    return { status: res.status, data: { data: res.data?.data } };
+    return { status: res.status, data: { data: res.data?.messages?.data } };
   } catch {
     return { status: 500, data: { data: undefined } };
   }
@@ -71,17 +73,16 @@ export async function fetchConversationMessagesForSync(params: {
   limit?: number;
 }): Promise<InstagramMessage[]> {
   const { accessToken, conversationId, limit = DEFAULT_MESSAGE_LIMIT } = params;
-  const res = await instagramRequest<{ data?: unknown }>({
+  const res = await instagramRequest<{ messages?: { data?: unknown } }>({
     method: "GET",
     url: graphUrl(
-      `/${IG_API_VERSION}/${encodeURIComponent(conversationId)}/messages`,
+      `/${IG_API_VERSION}/${encodeURIComponent(conversationId)}`,
     ),
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
     params: {
-      fields: "from{id,username},message,created_time",
-      limit,
+      fields: `messages.limit(${limit}){id,from{id,username},to{id,username},message,created_time}`,
     },
     postRequestDelayMs: REQUEST_DELAY_MS,
   });
@@ -92,7 +93,7 @@ export async function fetchConversationMessagesForSync(params: {
     throw new Error(`Instagram API request failed (${res.status})`);
   }
 
-  const data = res.data?.data;
+  const data = res.data?.messages?.data;
   if (!Array.isArray(data)) {
     return [];
   }
@@ -115,7 +116,9 @@ export async function fetchConversationsForSync(params: {
       Authorization: `Bearer ${accessToken}`,
     },
     params: {
-      fields: "participants,messages{from,message,created_time},updated_time",
+      platform: "instagram",
+      fields:
+        "id,participants,messages.limit(1){id,from{id,username},to{id,username},message,created_time},updated_time",
     },
     postRequestDelayMs: REQUEST_DELAY_MS,
   });
@@ -141,7 +144,7 @@ export async function fetchConversationsForSync(params: {
 }
 
 function throwIfTokenExpired(
-  response: InstagramRequestResult<{ data?: unknown }>,
+  response: InstagramRequestResult<unknown>,
 ): void {
   if (response.status === 401) {
     throw new Error(

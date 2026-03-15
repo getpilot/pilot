@@ -9,7 +9,6 @@ import {
   contactTag,
 } from "@pilot/db/schema";
 import { eq, and, inArray, desc, gt, asc } from "drizzle-orm";
-import { inngest } from "@/lib/inngest/client";
 import { revalidatePath } from "next/cache";
 import {
   generateText,
@@ -29,8 +28,13 @@ import {
   getPersonalizedFollowUpPrompt,
   getPersonalizedLeadAnalysisPrompt,
 } from "@pilot/core/sidekick/personalization";
+import { fetchAndStoreInstagramContacts as fetchAndStoreInstagramContactsCore } from "@pilot/core/contacts/sync";
 import { sanitizeText } from "@/lib/utils";
-import { assertBillingAllowed, BillingLimitError } from "@/lib/billing/enforce";
+import {
+  assertBillingAllowed,
+  BillingLimitError,
+  getBillingStatus,
+} from "@/lib/billing/enforce";
 import {
   fetchConversationMessagesForSync as fetchInstagramConversationMessagesForSync,
   fetchConversationsForSync as fetchInstagramConversationsForSync,
@@ -609,21 +613,21 @@ export async function syncInstagramContacts(fullSync?: boolean) {
       return { success: false, error: "Instagram is not connected" };
     }
 
-    console.log("Triggering contact sync for user:", user.id);
-    await inngest.send({
-      name: "contacts/sync",
-      data: {
-        userId: user.id,
-        fullSync:
-          typeof fullSync === "boolean"
-            ? fullSync
-            : process.env.NODE_ENV !== "production",
-      },
+    console.log("Running contact sync for user:", user.id);
+    const billing = await getBillingStatus(user.id);
+    const contacts = await fetchAndStoreInstagramContactsCore({
+      dbClient: db,
+      userId: user.id,
+      fullSync:
+        typeof fullSync === "boolean"
+          ? fullSync
+          : process.env.NODE_ENV !== "production",
+      billing,
     });
 
     revalidatePath("/contacts");
 
-    return { success: true };
+    return { success: true, count: contacts.length };
   } catch (error) {
     if (error instanceof BillingLimitError) {
       return { success: false, error: error.message };
@@ -677,6 +681,7 @@ export async function getContactsLastUpdatedAt(): Promise<string | null> {
     const rows = await db
       .select({ updatedAt: contact.updatedAt })
       .from(contact)
+      .where(eq(contact.userId, user.id))
       .orderBy(desc(contact.updatedAt))
       .limit(1);
 
@@ -701,7 +706,7 @@ export async function hasContactsUpdatedSince(
     const rows = await db
       .select({ id: contact.id })
       .from(contact)
-      .where(gt(contact.updatedAt, since))
+      .where(and(eq(contact.userId, user.id), gt(contact.updatedAt, since)))
       .limit(1);
 
     return { updated: rows.length > 0 };
