@@ -23,6 +23,33 @@
   AI-powered Instagram sales system for lead management and revenue operations - built for creators, entrepreneurs, and social teams who want conversions, not brittle flow-builder bots.
 </p>
 
+<p align="center">
+  Supported by teams building alongside us.
+</p>
+
+<table align="center">
+  <tr>
+    <td align="center" valign="top" width="50%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="./apps/web/public/greptile-dark.svg" />
+        <source media="(prefers-color-scheme: light)" srcset="./apps/web/public/greptile.svg" />
+        <img src="./apps/web/public/greptile.svg" alt="Greptile" height="40" />
+      </picture>
+      <br />
+      Free Greptile license through their open source program, with setup support.
+    </td>
+    <td align="center" valign="top" width="50%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="./apps/web/public/supermemory-dark.svg" />
+        <source media="(prefers-color-scheme: light)" srcset="./apps/web/public/supermemory.svg" />
+        <img src="./apps/web/public/supermemory.svg" alt="Supermemory" height="32" />
+      </picture>
+      <br />
+      Startup Program support: $1,000 in Pro credits for 6 months, product team access, early feature access, and collaboration opportunities.
+    </td>
+  </tr>
+</table>
+
 ## Table of Contents
 
 - [About](#about)
