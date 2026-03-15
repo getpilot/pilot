@@ -8,7 +8,7 @@ import {
   hasContactsUpdatedSince,
   syncInstagramContacts,
 } from "@/actions/contacts";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { LoaderCircle, RefreshCw } from "lucide-react";
 
@@ -114,7 +114,6 @@ export default function SyncContactsButton() {
     getStoredNextAllowedAt,
   );
   const [nowMs, setNowMs] = useState(() => Date.now());
-  const hasShownCooldownToastRef = useRef(false);
   const remainingMs = nextAllowedAt
     ? new Date(nextAllowedAt).getTime() - nowMs
     : 0;
@@ -122,21 +121,6 @@ export default function SyncContactsButton() {
   const rateLimitMessage = syncDisabled
     ? `Manual sync is available again in ${formatRemainingDuration(remainingMs)}.`
     : null;
-
-  useEffect(() => {
-    if (syncDisabled && !hasShownCooldownToastRef.current) {
-      hasShownCooldownToastRef.current = true;
-      toast.info(
-        `Manual sync is cooling down. Available again in ${formatRemainingDuration(
-          remainingMs,
-        )}.`,
-      );
-    }
-
-    if (!syncDisabled) {
-      hasShownCooldownToastRef.current = false;
-    }
-  }, [remainingMs, syncDisabled]);
 
   useEffect(() => {
     if (!syncDisabled) {
@@ -166,7 +150,6 @@ export default function SyncContactsButton() {
         return;
       }
 
-      hasShownCooldownToastRef.current = false;
       setNowMs(Date.now());
       setNextAllowedAt(getStoredNextAllowedAt());
     };
