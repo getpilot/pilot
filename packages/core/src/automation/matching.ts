@@ -61,8 +61,19 @@ export async function checkTriggerMatch(params: {
       triggerScope === "both" ||
       triggerScope === scope ||
       (scope === "dm" && !triggerScope);
+    if (
+      scope === "comment" &&
+      postId == null &&
+      postIdsByAutomationId.has(automationRecord.id)
+    ) {
+      console.warn("instagram.comment_webhook_missing_media_id", {
+        automationId: automationRecord.id,
+        userId,
+      });
+    }
     const postMatches =
       scope !== "comment" ||
+      postId == null ||
       !postIdsByAutomationId.has(automationRecord.id) ||
       postIdsByAutomationId.get(automationRecord.id) === postId;
 

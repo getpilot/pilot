@@ -81,6 +81,7 @@ async function performSync(
         }
 
         toast.success("Sync queued. Inngest accepted the event; updates will appear shortly.");
+        window.location.reload();
         return;
       }
 

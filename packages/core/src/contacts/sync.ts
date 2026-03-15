@@ -488,7 +488,10 @@ async function storeContacts(params: {
   for (let index = 0; index < newContactItems.length; index += NEW_CONTACT_WRITE_BATCH_SIZE) {
     const chunk = newContactItems.slice(index, index + NEW_CONTACT_WRITE_BATCH_SIZE);
 
-    const storeChunk = async (dbClient: any, opts?: { acquireLock?: boolean }) => {
+    const storeChunk = async (
+      dbClient: any,
+      opts?: { acquireLock?: boolean; serializeWithoutTransaction?: boolean },
+    ) => {
       if (chunk.length === 0) {
         return [] as InstagramContact[];
       }
@@ -541,17 +544,65 @@ async function storeContacts(params: {
         return true;
       });
 
-      await Promise.all(
-        allowedItems.map((item) =>
-          upsertContactRecord({
+      if (!opts?.serializeWithoutTransaction) {
+        await Promise.all(
+          allowedItems.map((item) =>
+            upsertContactRecord({
+              dbClient,
+              row: item.row,
+              fullSync: params.fullSync,
+            }),
+          ),
+        );
+
+        return allowedItems.map((item) => item.contactPayload);
+      }
+
+      // Neon HTTP does not support transactions, so serialize writes and re-check
+      // limits per item to narrow the race window as much as possible.
+      const storedItems: InstagramContact[] = [];
+
+      for (const item of chunk) {
+        if (existingIds.has(item.row.id)) {
+          await upsertContactRecord({
             dbClient,
             row: item.row,
             fullSync: params.fullSync,
-          }),
-        ),
-      );
+          });
+          storedItems.push(item.contactPayload);
+          continue;
+        }
 
-      return allowedItems.map((item) => item.contactPayload);
+        const [latestContactsTotal, latestNewContactsThisMonth] = await Promise.all([
+          countContactsForUser({
+            dbClient,
+            userId: params.userId,
+          }),
+          countContactsForUser({
+            dbClient,
+            userId: params.userId,
+            createdAfter: monthStart,
+          }),
+        ]);
+
+        const withinTotalLimit =
+          totalLimit === null || latestContactsTotal < totalLimit;
+        const withinMonthlyLimit =
+          monthlyLimit === null || latestNewContactsThisMonth < monthlyLimit;
+
+        if (!withinTotalLimit || !withinMonthlyLimit) {
+          continue;
+        }
+
+        await upsertContactRecord({
+          dbClient,
+          row: item.row,
+          fullSync: params.fullSync,
+        });
+        storedItems.push(item.contactPayload);
+      }
+
+      return storedItems;
     };
 
     let storedChunk: InstagramContact[] = [];
@@ -566,10 +617,18 @@ async function storeContacts(params: {
           throw error;
         }
 
-        storedChunk = await storeChunk(params.dbClient);
+        console.warn(
+          "contacts.sync.billing_limit_fallback_without_transaction",
+          { userId: params.userId },
+        );
+        storedChunk = await storeChunk(params.dbClient, {
+          serializeWithoutTransaction: true,
+        });
       }
     } else {
-      storedChunk = await storeChunk(params.dbClient);
+      storedChunk = await storeChunk(params.dbClient, {
+        serializeWithoutTransaction: true,
+      });
     }
 
     storedContacts.push(...storedChunk);
