@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "./tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 import { cn } from "../lib/utils";
 
 type SupportersProps = React.ComponentProps<"section">;
@@ -12,26 +8,28 @@ type SupportersProps = React.ComponentProps<"section">;
 const companies = [
   {
     name: "Greptile",
-    src: "/greptile.svg",
+    lightSrc: "/greptile.svg",
+    darkSrc: "/greptile-dark.svg",
     className: "h-10",
     tooltip:
       "Free Greptile license through their open source program, with setup support.",
   },
   {
     name: "Supermemory",
-    src: "/supermemory.svg",
+    lightSrc: "/supermemory.svg",
+    darkSrc: "/supermemory-dark.svg",
     className: "h-8",
     tooltip:
       "Startup Program support: $1,000 in Pro credits for 6 months, product team access, early feature access, and collaboration opportunities.",
   },
 ] as const;
 
-export default function Supporters({
-  className,
-  ...props
-}: SupportersProps) {
+export default function Supporters({ className, ...props }: SupportersProps) {
   return (
-    <section className={cn("bg-background py-12 sm:py-16", className)} {...props}>
+    <section
+      className={cn("bg-background py-12 sm:py-16", className)}
+      {...props}
+    >
       <div className="mx-auto max-w-5xl px-6">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-foreground text-lg font-medium">
@@ -51,16 +49,28 @@ export default function Supporters({
                   className="cursor-default rounded-md p-1"
                 >
                   <img
-                    src={company.src}
+                    src={company.lightSrc}
                     alt={company.name}
                     className={cn(
-                      "h-8 w-auto object-contain brightness-0 dark:invert",
-                      company.className
+                      "h-8 w-auto object-contain dark:hidden",
+                      company.className,
+                    )}
+                  />
+                  <img
+                    src={company.darkSrc}
+                    alt={company.name}
+                    className={cn(
+                      "hidden h-8 w-auto object-contain dark:block",
+                      company.className,
                     )}
                   />
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={8} className="max-w-xs p-3">
+              <TooltipContent
+                side="bottom"
+                sideOffset={8}
+                className="max-w-xs p-3"
+              >
                 {company.tooltip}
               </TooltipContent>
             </Tooltip>
