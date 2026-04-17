@@ -17,7 +17,7 @@ function WaitlistWrapperContent({
         "bg-card/70 dark:bg-card/80 pb-0 overflow-hidden rounded-2xl",
         "shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.08),0px_2px_4px_-1px_rgba(0,0,0,0.03)]",
         "border border-border/70 dark:border-border/90",
-        className
+        className,
       )}
     >
       <div className="flex flex-col items-center gap-4 flex-1 text-center w-full p-6 pb-4">
@@ -29,7 +29,7 @@ function WaitlistWrapperContent({
           "flex flex-col md:flex-row justify-between items-center",
           "w-full self-stretch px-4 md:px-8 py-3 text-sm",
           "bg-secondary/60 dark:bg-accent/30 overflow-hidden",
-          "gap-4 md:gap-2"
+          "gap-4 md:gap-2",
         )}
       >
         <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 w-full md:w-auto text-center md:text-left">
@@ -74,7 +74,7 @@ function WaitlistWrapperContent({
             className="text-xs w-full md:w-auto justify-center flex"
           >
             <Link
-              href="https://pilot-ops-app.vercel.app"
+              href="https://dashboard.trypilot.app/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Open the Pilot app in new tab"
@@ -94,7 +94,7 @@ function WaitlistWrapperFallback({ className }: { className?: string }) {
     <div
       className={clsx(
         "w-full mx-auto max-w-[500px] flex flex-col justify-center items-center bg-card/70 dark:bg-card/80 pb-0 overflow-hidden rounded-2xl border border-border/70 dark:border-border/90",
-        className
+        className,
       )}
     >
       <div className="flex items-center gap-2 p-6">
@@ -116,4 +116,3 @@ export function WaitlistWrapper({
     </Suspense>
   );
 }
-

@@ -17,7 +17,7 @@ import { useState } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import Link from "next/link";
 
-const APP_UPGRADE_URL = "https://pilot-ops-app.vercel.app/upgrade";
+const APP_UPGRADE_URL = "https://dashboard.trypilot.app/upgrade";
 
 const getLastRowSpanClass = (index: number, totalCards: number): string => {
   const remainder = totalCards % 3;

@@ -1,11 +1,11 @@
-import { Button } from "@pilot/ui/components/button"
-import Link from "next/link"
-import { siteConfig } from "@/config/site.config"
-import { Icons } from "@/components/icons"
-import ThemeToggler from "@/components/theme/toggler"
-import { ArrowUpRight } from "lucide-react"
+import { Button } from "@pilot/ui/components/button";
+import Link from "next/link";
+import { siteConfig } from "@/config/site.config";
+import { Icons } from "@/components/icons";
+import ThemeToggler from "@/components/theme/toggler";
+import { ArrowUpRight } from "lucide-react";
 
-const CURRENT_YEAR = new Date().getFullYear()
+const CURRENT_YEAR = new Date().getFullYear();
 
 const sections = {
   landing: {
@@ -33,7 +33,7 @@ const sections = {
     title: "Resources",
     items: [
       { label: "Manifesto", href: "/manifesto" },
-      { label: "App", href: "https://pilot-ops-app.vercel.app/" },
+      { label: "App", href: "https://dashboard.trypilot.app/" },
       { label: "GitHub", href: "https://github.com/getpilot" },
     ],
   },
@@ -41,12 +41,15 @@ const sections = {
     title: "Socials",
     items: [
       { label: "X", href: "https://x.com/PilotOps_" },
-      { label: "LinkedIn", href: "https://www.linkedin.com/company/pilot-ops/" },
+      {
+        label: "LinkedIn",
+        href: "https://www.linkedin.com/company/pilot-ops/",
+      },
       { label: "Instagram", href: "https://www.instagram.com/pilot.ops/" },
       { label: "GitHub", href: "https://github.com/getpilot" },
     ],
   },
-}
+};
 
 const Footer = () => {
   return (
@@ -99,14 +102,14 @@ const Footer = () => {
               height="64"
             >
               {Array.from({ length: 17 }, (_, i) => {
-                const offset = i * 8
+                const offset = i * 8;
                 return (
                   <path
                     key={`footer-pattern-${offset}`}
                     d={`M${-106 + offset} 110L${22 + offset} -18`}
                     strokeWidth="1"
                   />
-                )
+                );
               })}
             </pattern>
           </defs>
@@ -131,9 +134,13 @@ const Footer = () => {
           </div>
           <div className="ml-2 flex items-center mt-auto gap-2">
             <ThemeToggler />
-            <Button asChild variant="outline" className="h-10 flex items-center px-3">
+            <Button
+              asChild
+              variant="outline"
+              className="h-10 flex items-center px-3"
+            >
               <Link
-                href="https://pilot-ops-app.vercel.app/"
+                href="https://dashboard.trypilot.app/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -171,7 +178,7 @@ const Footer = () => {
         ))}
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

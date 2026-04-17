@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://pilot-ops.vercel.app" rel="noopener">
-    <img width="750" height="394" src="https://pilot-ops.vercel.app/og.png" alt="Pilot - Instagram Automation Platform" />
+  <a href="https://trypilot.app" rel="noopener">
+    <img width="750" height="394" src="https://trypilot.app/og.png" alt="Pilot - Instagram Automation Platform" />
   </a>
 </p>
 

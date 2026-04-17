@@ -1,8 +1,8 @@
-import { ArrowUpRight } from "lucide-react"
-import Link from "next/link"
-import { BlurFade } from "@pilot/ui/components/blur-fade"
-import { Button } from "@pilot/ui/components/button"
-import GameOfLife from "./hero-background"
+import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
+import { BlurFade } from "@pilot/ui/components/blur-fade";
+import { Button } from "@pilot/ui/components/button";
+import GameOfLife from "./hero-background";
 
 const Hero = () => {
   return (
@@ -16,7 +16,7 @@ const Hero = () => {
           >
             <Link
               aria-label="Open the Pilot app"
-              href="https://pilot-ops-app.vercel.app/"
+              href="https://dashboard.trypilot.app/"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -24,7 +24,9 @@ const Hero = () => {
                 Update
               </span>
               <span className="flex items-center gap-1 truncate">
-                <span className="w-full truncate">Early access is open for waitlist users</span>
+                <span className="w-full truncate">
+                  Early access is open for waitlist users
+                </span>
                 <ArrowUpRight className="size-4 shrink-0 text-muted-foreground" />
               </span>
             </Link>
@@ -37,9 +39,9 @@ const Hero = () => {
         </BlurFade>
         <BlurFade delay={0.12} inView inViewMargin="-100px">
           <p className="mt-5 max-w-2xl text-center text-base text-balance text-muted-foreground sm:mt-8 sm:text-lg">
-            Most teams lose warm leads in DMs because follow-up breaks.
-            Pilot qualifies intent, routes risk, and keeps replies moving so
-            revenue does not stall in the inbox.
+            Most teams lose warm leads in DMs because follow-up breaks. Pilot
+            qualifies intent, routes risk, and keeps replies moving so revenue
+            does not stall in the inbox.
           </p>
         </BlurFade>
         <BlurFade
@@ -53,7 +55,7 @@ const Hero = () => {
           </Button>
           <Button asChild variant="outline">
             <Link
-              href="https://pilot-ops-app.vercel.app/"
+              href="https://dashboard.trypilot.app/"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -67,7 +69,7 @@ const Hero = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;

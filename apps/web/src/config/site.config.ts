@@ -5,7 +5,7 @@ export const siteConfig: SiteConfig = {
   title: "Pilot — Turn Instagram DMs Into Qualified Leads",
   description:
     "AI-powered Instagram sales system for lead management and revenue operations — built for creators, entrepreneurs, and social teams who want conversions, not brittle flow-builder bots.",
-  origin: "https://pilot-ops.vercel.app/",
+  origin: "https://trypilot.app/",
   keywords: [
     "social media",
     "infoproducts",
@@ -17,7 +17,7 @@ export const siteConfig: SiteConfig = {
     "automatic",
     "sales",
   ],
-  og: "https://pilot-ops.vercel.app/og.png",
+  og: "https://trypilot.app/og.png",
   creator: {
     name: "ArjunCodess",
     url: "https://arjuncodess.is-a.dev/",

@@ -24,9 +24,10 @@ const PrivacyPage = () => {
           </h2>
           <p className="mt-3 text-muted-foreground">
             This policy applies to Pilot-operated properties, including
-            `pilot-ops.vercel.app`, the waitlist, and the product app. It covers
-            data collected directly from users, data received from third-party
-            integrations, and system-generated operational data.
+            `trypilot.app`, `dashboard.trypilot.app`, the waitlist, and the
+            product app. It covers data collected directly from users, data
+            received from third-party integrations, and system-generated
+            operational data.
           </p>
         </div>
 
