@@ -36,13 +36,13 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          npx -y react-doctor@${REACT_DOCTOR_VERSION} . --project app --yes | tee react-doctor-app.log
+          npx -y react-doctor@${REACT_DOCTOR_VERSION} . --project app --yes 2>&1 | tee react-doctor-app.log
 
       - name: Run React Doctor for web
         shell: bash
         run: |
           set -o pipefail
-          npx -y react-doctor@${REACT_DOCTOR_VERSION} . --project web --yes | tee react-doctor-web.log
+          npx -y react-doctor@${REACT_DOCTOR_VERSION} . --project web --yes 2>&1 | tee react-doctor-web.log
 
       - name: Update README badges
         shell: bash
@@ -52,17 +52,49 @@ jobs:
 
           const ANSI_PATTERN = /\u001B\[[0-9;]*m/g;
 
-          const appLog = fs.readFileSync("react-doctor-app.log", "utf8").replaceAll(ANSI_PATTERN, "");
-          const webLog = fs.readFileSync("react-doctor-web.log", "utf8").replaceAll(ANSI_PATTERN, "");
+          const appLog = fs.readFileSync("react-doctor-app.log", "utf8").replace(ANSI_PATTERN, "");
+          const webLog = fs.readFileSync("react-doctor-web.log", "utf8").replace(ANSI_PATTERN, "");
+
+          function extractExistingShareUrl(project) {
+            const readmePaths = ["README.md", `apps/${project}/README.md`];
+            const pattern = new RegExp(`https://www\\.react\\.doctor/share\\?p=${project}&s=\\d+&w=\\d+&f=\\d+`);
+
+            for (const readmePath of readmePaths) {
+              if (!fs.existsSync(readmePath)) {
+                continue;
+              }
+
+              const match = fs.readFileSync(readmePath, "utf8").match(pattern);
+              if (match) {
+                return match[0];
+              }
+            }
+
+            return null;
+          }
 
           function extractShareUrl(log, project) {
-            const match = log.match(new RegExp(`https://www\\.react\\.doctor/share\\?p=${project}[^\\s]*`));
-            if (match) {
-              return match[0];
+            const urls = log.match(/https:\/\/www\.react\.doctor\/share(?:\/badge)?\?[^)\]\s"'<>]+/g) ?? [];
+            for (const rawUrl of urls) {
+              const url = new URL(rawUrl.replace("/share/badge", "/share"));
+              if (url.searchParams.get("p") === project) {
+                return url.toString();
+              }
+            }
+
+            const queryMatch = log.match(new RegExp(`p=${project}&s=(\\d+)&w=(\\d+)&f=(\\d+)`));
+            if (queryMatch) {
+              return `https://www.react.doctor/share?p=${project}&s=${queryMatch[1]}&w=${queryMatch[2]}&f=${queryMatch[3]}`;
             }
 
             const scoreMatch = log.match(/(\d+)\s*\/\s*100/);
             if (!scoreMatch) {
+              const existingShareUrl = extractExistingShareUrl(project);
+              if (existingShareUrl) {
+                console.warn(`React Doctor did not emit a score for ${project}; keeping existing badge.`);
+                return existingShareUrl;
+              }
+
               throw new Error(`Could not find React Doctor score for ${project}`);
             }
 
