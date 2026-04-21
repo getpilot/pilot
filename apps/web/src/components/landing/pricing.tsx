@@ -18,6 +18,10 @@ import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import Link from "next/link";
 
 const APP_UPGRADE_URL = "https://dashboard.trypilot.app/upgrade";
+type PricingProps = {
+  showHeader?: boolean;
+  showPageLink?: boolean;
+};
 
 const getLastRowSpanClass = (index: number, totalCards: number): string => {
   const remainder = totalCards % 3;
@@ -33,7 +37,10 @@ const getLastRowSpanClass = (index: number, totalCards: number): string => {
   return "xl:col-span-2";
 };
 
-const Pricing = () => {
+const Pricing = ({
+  showHeader = true,
+  showPageLink = true,
+}: PricingProps) => {
   const [isYearly, setIsYearly] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const showYearlyToggle = hasAnyYearlyPricing();
@@ -45,18 +52,20 @@ const Pricing = () => {
       aria-labelledby="pricing-title"
       className="mx-auto w-full max-w-6xl"
     >
-      <div className="mx-auto text-center">
-        <h2
-          id="pricing-title"
-          className="font-heading text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl"
-        >
-          Pick a plan that fits your volume
-        </h2>
-        <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-balance text-base md:text-lg">
-          Start where you are. Upgrade in-app when your contacts, automations,
-          and Sidekick usage grow.
-        </p>
-      </div>
+      {showHeader ? (
+        <div className="mx-auto text-center">
+          <h2
+            id="pricing-title"
+            className="font-heading text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl"
+          >
+            Pick a plan that fits your volume
+          </h2>
+          <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-balance text-base md:text-lg">
+            Start where you are. Upgrade in-app when your contacts, automations,
+            and Sidekick usage grow.
+          </p>
+        </div>
+      ) : null}
 
       {showYearlyToggle && (
         <div className="mt-10 flex items-center justify-center">
@@ -272,6 +281,13 @@ const Pricing = () => {
       <p className="text-muted-foreground mt-8 text-center text-sm">
         Checkout happens inside the app. Use Buy in app to continue.
       </p>
+      {showPageLink ? (
+        <div className="mt-4 flex justify-center">
+          <Button variant="link" asChild>
+            <Link href="/pricing">View full pricing page</Link>
+          </Button>
+        </div>
+      ) : null}
     </section>
   );
 };

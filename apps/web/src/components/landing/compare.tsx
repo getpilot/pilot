@@ -1,4 +1,5 @@
 import { Check, Minus } from "lucide-react"
+import Link from "next/link"
 import {
   Table,
   TableBody,
@@ -9,6 +10,11 @@ import {
 } from "@pilot/ui/components/table"
 
 type Advantage = "Pilot" | "ManyChat"
+type CompareTableProps = {
+  showPageLink?: boolean
+  title?: string
+  description?: string
+}
 
 const rows = [
   {
@@ -67,7 +73,11 @@ const rows = [
   },
 ]
 
-const CompareTable = () => {
+const CompareTable = ({
+  showPageLink = true,
+  title = "Pilot vs ManyChat",
+  description = "The short version: Pilot is built for conversion reliability, not flow-builder complexity or contact-tax pricing.",
+}: CompareTableProps) => {
   return (
     <section
       id="comparison"
@@ -78,11 +88,10 @@ const CompareTable = () => {
         id="comparison-title"
         className="font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
       >
-        Pilot vs ManyChat
+        {title}
       </h2>
       <p className="mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
-        The short version: Pilot is built for conversion reliability, not
-        flow-builder complexity or contact-tax pricing.
+        {description}
       </p>
 
       <div className="-mx-2 mt-8 overflow-x-auto sm:mx-0">
@@ -131,6 +140,15 @@ const CompareTable = () => {
           </Table>
         </div>
       </div>
+      {showPageLink ? (
+        <p className="mt-4 text-sm text-muted-foreground">
+          Need the full breakdown?{" "}
+          <Link href="/pilot-vs-manychat" className="underline underline-offset-4">
+            Read the detailed comparison page
+          </Link>
+          .
+        </p>
+      ) : null}
     </section>
   )
 }
