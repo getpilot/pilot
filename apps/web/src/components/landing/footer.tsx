@@ -22,6 +22,7 @@ const sections = {
     title: "Learn",
     items: [
       { label: "Instagram DM Automation", href: "/instagram-dm-automation" },
+      { label: "Comment-to-DM Automation", href: "/comment-to-dm-automation" },
       { label: "Open source", href: "/open-source" },
       { label: "Manifesto", href: "/manifesto" },
     ],
