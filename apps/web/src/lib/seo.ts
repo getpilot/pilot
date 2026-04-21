@@ -9,8 +9,39 @@ type PageMetadataInput = {
   keywords?: string[];
 };
 
-export const MARKETING_LAST_UPDATED_ISO = "2026-04-21";
-export const MARKETING_LAST_UPDATED_LABEL = "April 21, 2026";
+const DEFAULT_MARKETING_LAST_UPDATED_ISO = "2026-04-21";
+
+function normalizeMarketingLastUpdatedIso(value?: string) {
+  if (!value) {
+    return DEFAULT_MARKETING_LAST_UPDATED_ISO;
+  }
+
+  const trimmedValue = value.trim();
+  const date = new Date(`${trimmedValue}T00:00:00Z`);
+
+  if (Number.isNaN(date.getTime())) {
+    return DEFAULT_MARKETING_LAST_UPDATED_ISO;
+  }
+
+  return trimmedValue;
+}
+
+function formatMarketingLastUpdatedLabel(isoDate: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${isoDate}T00:00:00Z`));
+}
+
+export const MARKETING_LAST_UPDATED_ISO = normalizeMarketingLastUpdatedIso(
+  process.env.NEXT_PUBLIC_MARKETING_LAST_UPDATED_ISO ??
+    process.env.MARKETING_LAST_UPDATED_ISO,
+);
+export const MARKETING_LAST_UPDATED_LABEL = formatMarketingLastUpdatedLabel(
+  MARKETING_LAST_UPDATED_ISO,
+);
 
 export const marketingKeywords = [
   "instagram dm automation",
