@@ -1,6 +1,14 @@
-"use client";
-
 import React from "react";
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Join the Pilot Waitlist",
+  description:
+    "Join the Pilot waitlist to get early access to Instagram DM automation, lead qualification, CRM workflows, and self-hostable sales infrastructure.",
+  path: "/waitlist",
+  keywords: ["pilot waitlist", "instagram dm automation early access"],
+});
 
 export default function WaitlistLayout({
   children,

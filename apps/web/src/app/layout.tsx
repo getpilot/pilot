@@ -25,13 +25,16 @@ const fontHeading = Prata({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.origin),
-  title: siteConfig.title,
+  title: {
+    default: siteConfig.title,
+    template: "%s | Pilot",
+  },
   description: siteConfig.description,
   keywords: siteConfig.keywords,
   creator: siteConfig.name,
   icons: {
-    icon: "/logo.svg",
-    shortcut: "/logo.svg",
+    icon: "/logo.png",
+    shortcut: "/logo.png",
   },
   openGraph: {
     title: siteConfig.title,
