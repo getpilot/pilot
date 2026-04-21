@@ -2,20 +2,16 @@ import { SiteConfig } from "@pilot/types";
 
 export const siteConfig: SiteConfig = {
   name: "Pilot",
-  title: "Pilot — Turn Instagram DMs Into Qualified Leads",
+  title: "Pilot Dashboard",
   description:
-    "AI-powered Instagram sales system for lead management and revenue operations — built for creators, entrepreneurs, and social teams who want conversions, not brittle flow-builder bots.",
+    "Pilot dashboard for account access, onboarding, billing, contacts, automations, and Sidekick operations.",
   origin: "https://dashboard.trypilot.app/",
   keywords: [
-    "social media",
-    "infoproducts",
-    "high ticket",
-    "contacts",
-    "pipeline",
-    "future",
-    "agentic",
-    "automatic",
-    "sales",
+    "pilot dashboard",
+    "instagram automation dashboard",
+    "instagram crm dashboard",
+    "pilot app",
+    "dm automation workspace",
   ],
   og: "https://dashboard.trypilot.app/og.png",
   creator: {
