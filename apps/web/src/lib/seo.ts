@@ -36,6 +36,7 @@ export const marketingPages = [
   "/pilot-vs-manychat",
   "/instagram-dm-automation",
   "/comment-to-dm-automation",
+  "/creator-dm-proof",
 ];
 
 export const researchSources = {
