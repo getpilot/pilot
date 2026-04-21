@@ -1,6 +1,19 @@
-import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
-import { Button } from "@pilot/ui/components/button"
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { Button } from "@pilot/ui/components/button";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Why Pilot Is Open Source",
+  description:
+    "See why Pilot is open source by design, how self-hosting fits the product, and why transparency matters for Instagram sales infrastructure.",
+  path: "/open-source",
+  keywords: [
+    "open source instagram automation",
+    "self-hosted instagram crm",
+  ],
+});
 
 const OpenSourcePage = () => {
   return (
@@ -90,6 +103,6 @@ const OpenSourcePage = () => {
       </div>
     </main>
   )
-}
+};
 
-export default OpenSourcePage
+export default OpenSourcePage;

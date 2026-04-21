@@ -1,4 +1,14 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Terms of Service",
+  description:
+    "Review the Pilot Terms of Service for website access, Instagram automation usage, billing limits, AI outputs, and acceptable use.",
+  path: "/tos",
+  keywords: ["pilot terms of service"],
+});
 
 const TermsOfServicePage = () => {
   return (

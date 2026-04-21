@@ -1,3 +1,14 @@
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "The Pilot Manifesto",
+  description:
+    "Read the product philosophy behind Pilot: Instagram automation with CRM depth, account-safety guardrails, and open-source control.",
+  path: "/manifesto",
+  keywords: ["pilot manifesto", "instagram automation philosophy"],
+});
+
 const ManifestoPage = () => {
   return (
     <main className="mx-auto w-full max-w-4xl px-4 pt-24 md:mt-16 pb-16 sm:px-6 lg:px-8">
