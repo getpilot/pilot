@@ -35,6 +35,7 @@ export const marketingPages = [
   "/pricing",
   "/pilot-vs-manychat",
   "/instagram-dm-automation",
+  "/comment-to-dm-automation",
 ];
 
 export const researchSources = {
@@ -227,5 +228,53 @@ export function getPricingSchema() {
       url: absoluteUrl("/pricing"),
       category: "Software subscription",
     })),
+  };
+}
+
+export function getBreadcrumbSchema(
+  items: Array<{ name: string; path: string }>,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: absoluteUrl(item.path),
+    })),
+  };
+}
+
+export function getWebPageSchema({
+  title,
+  description,
+  path,
+}: {
+  title: string;
+  description: string;
+  path: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: title,
+    description,
+    url: absoluteUrl(path),
+    isPartOf: {
+      "@type": "WebSite",
+      name: siteConfig.name,
+      url: siteConfig.origin,
+    },
+    about: {
+      "@type": "SoftwareApplication",
+      name: siteConfig.name,
+    },
+    author: {
+      "@type": "Person",
+      name: siteConfig.creator.name,
+      url: siteConfig.creator.url,
+    },
+    dateModified: MARKETING_LAST_UPDATED_ISO,
   };
 }
