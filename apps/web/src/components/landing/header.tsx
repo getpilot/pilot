@@ -12,10 +12,9 @@ import { Icons } from "@/components/icons"
 const navLinks = [
   { label: "Features", href: "/#platform" },
   { label: "Product", href: "/#pipeline-analytics" },
-  { label: "Comparison", href: "/#comparison" },
-  { label: "Workflow", href: "/#workflow" },
-  { label: "Pricing", href: "/#pricing" },
-  { label: "FAQ", href: "/#faq" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Compare", href: "/pilot-vs-manychat" },
+  { label: "Open Source", href: "/open-source" },
 ]
 
 const Header = () => {

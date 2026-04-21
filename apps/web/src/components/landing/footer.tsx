@@ -8,33 +8,31 @@ import { ArrowUpRight } from "lucide-react";
 const CURRENT_YEAR = new Date().getFullYear();
 
 const sections = {
-  landing: {
-    title: "Landing",
+  product: {
+    title: "Product",
     items: [
       { label: "Features", href: "/#platform" },
       { label: "Product", href: "/#pipeline-analytics" },
-      { label: "Comparison", href: "/#comparison" },
-      { label: "Workflow", href: "/#workflow" },
-      { label: "Proof", href: "/#social-proof" },
-      { label: "Pricing", href: "/#pricing" },
+      { label: "Pricing", href: "/pricing" },
+      { label: "Compare", href: "/pilot-vs-manychat" },
       { label: "FAQ", href: "/#faq" },
     ],
   },
-  pages: {
-    title: "Pages",
+  learn: {
+    title: "Learn",
     items: [
-      { label: "Waitlist", href: "/waitlist" },
+      { label: "Instagram DM Automation", href: "/instagram-dm-automation" },
       { label: "Open source", href: "/open-source" },
-      { label: "Privacy", href: "/privacy" },
-      { label: "Terms", href: "/tos" },
+      { label: "Manifesto", href: "/manifesto" },
     ],
   },
-  resources: {
-    title: "Resources",
+  company: {
+    title: "Company",
     items: [
-      { label: "Manifesto", href: "/manifesto" },
-      { label: "App", href: "https://dashboard.trypilot.app/" },
+      { label: "Waitlist", href: "/waitlist" },
       { label: "GitHub", href: "https://github.com/getpilot" },
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/tos" },
     ],
   },
   socials: {
