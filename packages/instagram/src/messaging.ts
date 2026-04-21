@@ -18,7 +18,6 @@ export async function sendInstagramMessage(params: {
         "Content-Type": "application/json",
       },
       data: {
-        messaging_product: "instagram",
         recipient: { id: recipientId },
         message: { text },
       },

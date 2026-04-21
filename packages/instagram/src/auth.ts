@@ -12,7 +12,7 @@ import type {
 } from "./types";
 
 const DEFAULT_SCOPE =
-  "instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish";
+  "instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments";
 
 export function buildInstagramAuthUrl(params: {
   clientId: string;

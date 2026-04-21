@@ -8,18 +8,18 @@
   },
   "scripts": {
     "check-types": "tsc --noEmit",
-    "test": "pnpm test:live",
-    "test:live": "pnpm exec tsx --test src/__tests__/instagram.live.test.ts"
+    "test": "tsx --test src/__tests__/instagram.live.test.ts",
+    "test:live": "tsx --test src/__tests__/instagram.live.test.ts"
   },
   "dependencies": {
     "@pilot/types": "workspace:*",
-    "axios": "^1.13.5"
+    "axios": "^1.15.1"
   },
   "devDependencies": {
     "@pilot/config": "workspace:*",
-    "@types/node": "^24.10.13",
-    "dotenv": "^17.3.1",
-    "tsx": "^4.20.6",
-    "typescript": "^5.9.3"
+    "@types/node": "^25.6.0",
+    "dotenv": "^17.4.2",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
   }
 }

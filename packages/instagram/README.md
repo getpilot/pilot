@@ -12,6 +12,8 @@ It does not contain:
 - Next.js route handlers
 - DB access
 - App-specific auth/session logic
+- Webhook challenge handling or subscription setup
+- Instagram content publishing helpers
 
 ## Module map
 
@@ -27,7 +29,7 @@ It does not contain:
   - Centralized axios request path (`instagramRequest`)
   - Base URL and API version helpers (`graphUrl`, `authUrl`, `IG_API_VERSION`)
 - `comments.ts`
-  - Comment reply, generic template reply, public comment reply
+  - Private comment reply, generic template private reply, public comment reply
 - `conversations.ts`
   - Conversation/message fetch helpers
 - `messaging.ts`
@@ -99,6 +101,10 @@ pnpm --filter @pilot/instagram test
 - OAuth block only runs when:
   - `IG_TEST_INCLUDE_OAUTH=1`
   - all OAuth env vars are provided
+- Default scopes cover profile/media reads, messages, and comments:
+  - `instagram_business_basic`
+  - `instagram_business_manage_messages`
+  - `instagram_business_manage_comments`
 
 ## Env variable reference
 

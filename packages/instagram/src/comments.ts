@@ -1,5 +1,4 @@
 import {
-  facebookGraphUrl,
   IG_API_VERSION,
   graphUrl,
   instagramRequest,
@@ -22,7 +21,6 @@ export async function sendInstagramCommentReply(params: {
         "Content-Type": "application/json",
       },
       data: {
-        messaging_product: "instagram",
         recipient: { comment_id: commentId },
         message: { text },
       },
@@ -60,7 +58,6 @@ export async function sendInstagramCommentGenericTemplate(params: {
         "Content-Type": "application/json",
       },
       data: {
-        messaging_product: "instagram",
         recipient: { comment_id: commentId },
         message: {
           attachment: {
@@ -90,7 +87,7 @@ export async function postPublicCommentReply(params: {
   try {
     const res = await instagramRequest<{ id?: string; message_id?: string }>({
       method: "POST",
-      url: facebookGraphUrl(
+      url: graphUrl(
         `/${IG_API_VERSION}/${encodeURIComponent(commentId)}/replies`,
       ),
       headers: {

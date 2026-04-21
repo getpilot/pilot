@@ -4,7 +4,6 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "noEmit": true,
-    "baseUrl": ".",
     "types": ["node"]
   },
   "include": ["src/**/*.ts"]
