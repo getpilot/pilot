@@ -1,16 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@pilot/ui/components/button";
+import { RelatedReading } from "@/components/marketing/related-reading";
 import {
   MARKETING_LAST_UPDATED_LABEL,
   buildPageMetadata,
+  getBreadcrumbSchema,
+  getWebPageSchema,
   researchSources,
 } from "@/lib/seo";
 
+const pageTitle = "Instagram DM Automation Guide";
+const pageDescription =
+  "Learn what Instagram DM automation should do, what teams should look for in a tool, and how Pilot handles follow-up, routing, and lead qualification.";
+
 export const metadata: Metadata = buildPageMetadata({
-  title: "Instagram DM Automation Guide",
-  description:
-    "Learn what Instagram DM automation should do, what teams should look for in a tool, and how Pilot handles follow-up, routing, and lead qualification.",
+  title: pageTitle,
+  description: pageDescription,
   path: "/instagram-dm-automation",
   keywords: [
     "instagram dm automation",
@@ -59,6 +65,29 @@ const sections = [
 const InstagramDMAutomationPage = () => {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pt-24 pb-16 md:mt-16 sm:px-6 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            getBreadcrumbSchema([
+              { name: "Home", path: "/" },
+              { name: "Instagram DM Automation", path: "/instagram-dm-automation" },
+            ]),
+          ),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            getWebPageSchema({
+              title: pageTitle,
+              description: pageDescription,
+              path: "/instagram-dm-automation",
+            }),
+          ),
+        }}
+      />
       <div className="max-w-4xl">
         <p className="text-sm font-medium text-primary">Guide</p>
         <h1 className="font-heading mt-3 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
@@ -149,6 +178,29 @@ const InstagramDMAutomationPage = () => {
           while making handoff obvious when nuance matters.
         </p>
       </section>
+
+      <RelatedReading
+        links={[
+          {
+            href: "/comment-to-dm-automation",
+            title: "Comment-to-DM automation",
+            description:
+              "A more specific guide on turning public post engagement into private pipeline.",
+          },
+          {
+            href: "/pilot-vs-manychat",
+            title: "Pilot vs ManyChat",
+            description:
+              "Compare the category tradeoffs between a flow-builder and a sales-system approach.",
+          },
+          {
+            href: "/pricing",
+            title: "Pilot pricing",
+            description:
+              "Review the plans for teams scaling contacts, automations, and AI-assisted workflow volume.",
+          },
+        ]}
+      />
 
       <div className="mt-12 flex flex-wrap gap-3">
         <Button asChild>

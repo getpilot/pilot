@@ -2,16 +2,22 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Pricing from "@/components/landing/pricing";
 import { Button } from "@pilot/ui/components/button";
+import { RelatedReading } from "@/components/marketing/related-reading";
 import {
   MARKETING_LAST_UPDATED_LABEL,
   buildPageMetadata,
+  getBreadcrumbSchema,
   getPricingSchema,
+  getWebPageSchema,
 } from "@/lib/seo";
 
+const pageTitle = "Pilot Pricing";
+const pageDescription =
+  "Compare Pilot pricing plans for Instagram DM automation, lead management, AI replies, and self-host support.";
+
 export const metadata: Metadata = buildPageMetadata({
-  title: "Pilot Pricing",
-  description:
-    "Compare Pilot pricing plans for Instagram DM automation, lead management, AI replies, and self-host support.",
+  title: pageTitle,
+  description: pageDescription,
   path: "/pricing",
   keywords: [
     "instagram dm automation pricing",
@@ -23,6 +29,29 @@ export const metadata: Metadata = buildPageMetadata({
 const PricingPage = () => {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pt-24 pb-16 md:mt-16 sm:px-6 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            getBreadcrumbSchema([
+              { name: "Home", path: "/" },
+              { name: "Pricing", path: "/pricing" },
+            ]),
+          ),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            getWebPageSchema({
+              title: pageTitle,
+              description: pageDescription,
+              path: "/pricing",
+            }),
+          ),
+        }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -84,6 +113,29 @@ const PricingPage = () => {
           </p>
         </article>
       </section>
+
+      <RelatedReading
+        links={[
+          {
+            href: "/pilot-vs-manychat",
+            title: "Pilot vs ManyChat",
+            description:
+              "See how the pricing model compares alongside CRM depth, AI replies, and self-host control.",
+          },
+          {
+            href: "/comment-to-dm-automation",
+            title: "Comment-to-DM automation",
+            description:
+              "Understand the workflow that turns post engagement into private conversations and pipeline.",
+          },
+          {
+            href: "/open-source",
+            title: "Why Pilot is open source",
+            description:
+              "Learn why transparency and self-hosting are part of the product strategy.",
+          },
+        ]}
+      />
 
       <div className="mt-12 flex flex-wrap gap-3">
         <Button asChild>
