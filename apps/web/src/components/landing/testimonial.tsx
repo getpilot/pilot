@@ -1,4 +1,27 @@
+import Link from "next/link";
 import { Avatar, AvatarFallback } from "@pilot/ui/components/avatar";
+import { researchSources } from "@/lib/seo";
+
+const proofCards = [
+  {
+    stat: "73%",
+    label: "of social users expect brands to respond within 24 hours or sooner",
+    href: researchSources.socialResponseWindow.url,
+    source: researchSources.socialResponseWindow.name,
+  },
+  {
+    stat: "73%",
+    label: "say they will buy from a competitor if a brand does not respond",
+    href: researchSources.competitorRisk.url,
+    source: researchSources.competitorRisk.name,
+  },
+  {
+    stat: "76%",
+    label: "say social media influenced at least some recent purchases",
+    href: researchSources.purchaseInfluence.url,
+    source: researchSources.purchaseInfluence.name,
+  },
+];
 
 const Testimonial = () => {
   return (
@@ -31,6 +54,30 @@ const Testimonial = () => {
             </Avatar>
           </figcaption>
         </figure>
+
+        <div className="mx-auto mt-12 grid w-full max-w-5xl gap-4 md:grid-cols-3">
+          {proofCards.map((card) => (
+            <article
+              key={card.label}
+              className="rounded-2xl border border-border/70 bg-background/70 p-5"
+            >
+              <p className="font-heading text-3xl text-foreground">
+                {card.stat}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {card.label}
+              </p>
+              <Link
+                href={card.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex text-xs text-primary underline underline-offset-4"
+              >
+                Source: {card.source}
+              </Link>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
