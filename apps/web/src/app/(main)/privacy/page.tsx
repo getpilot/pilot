@@ -1,4 +1,14 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Privacy Policy",
+  description:
+    "Read how Pilot handles account data, Instagram integration records, CRM data, analytics, and deletion workflows across the website and product.",
+  path: "/privacy",
+  keywords: ["pilot privacy policy"],
+});
 
 const PrivacyPage = () => {
   return (

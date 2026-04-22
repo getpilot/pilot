@@ -24,10 +24,25 @@ const fontHeading = Prata({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.origin),
-  title: siteConfig.title,
+  title: {
+    default: siteConfig.title,
+    template: "%s | Pilot Dashboard",
+  },
   description: siteConfig.description,
   keywords: siteConfig.keywords,
   creator: siteConfig.creator.name,
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+      "max-image-preview": "none",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   icons: {
     icon: "/logo.png",
     shortcut: "/logo.png",

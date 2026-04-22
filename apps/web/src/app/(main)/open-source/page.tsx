@@ -1,10 +1,53 @@
-import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
-import { Button } from "@pilot/ui/components/button"
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { Button } from "@pilot/ui/components/button";
+import {
+  buildPageMetadata,
+  getBreadcrumbSchema,
+  getWebPageSchema,
+} from "@/lib/seo";
+
+const pageTitle = "Why Pilot Is Open Source";
+const pageDescription =
+  "See why Pilot is open source by design, how self-hosting fits the product, and why transparency matters for Instagram sales infrastructure.";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: pageTitle,
+  description: pageDescription,
+  path: "/open-source",
+  keywords: [
+    "open source instagram automation",
+    "self-hosted instagram crm",
+  ],
+});
 
 const OpenSourcePage = () => {
   return (
     <main className="mx-auto w-full max-w-4xl px-4 pt-24 md:mt-16 sm:px-6 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            getBreadcrumbSchema([
+              { name: "Home", path: "/" },
+              { name: "Open Source", path: "/open-source" },
+            ]),
+          ),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            getWebPageSchema({
+              title: pageTitle,
+              description: pageDescription,
+              path: "/open-source",
+            }),
+          ),
+        }}
+      />
       <p className="text-sm font-medium text-primary">Open Source</p>
       <h1 className="font-heading mt-3 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
         Why Pilot is open source by design
@@ -90,6 +133,6 @@ const OpenSourcePage = () => {
       </div>
     </main>
   )
-}
+};
 
-export default OpenSourcePage
+export default OpenSourcePage;

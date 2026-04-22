@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import CallToAction from "@/components/landing/call-to-action";
 import FAQSection from "@/components/landing/faq";
 import Features from "@/components/landing/features";
@@ -7,12 +8,55 @@ import Pricing from "@/components/landing/pricing";
 import SolarAnalytics from "@/components/landing/product-overview";
 import Testimonial from "@/components/landing/testimonial";
 import CompareTable from "@/components/landing/compare";
+import {
+  buildPageMetadata,
+  getFaqSchema,
+  getOrganizationSchema,
+  getSoftwareApplicationSchema,
+  getWebsiteSchema,
+} from "@/lib/seo";
 import { BlurFade } from "@pilot/ui/components/blur-fade";
 import Supporters from "@pilot/ui/components/supporters";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Turn Instagram DMs Into Qualified Leads",
+  description:
+    "Pilot helps creators, founders, and social teams turn Instagram DMs into qualified pipeline with AI replies, CRM context, and human handoff guardrails.",
+  path: "/",
+  keywords: [
+    "instagram dm automation software",
+    "instagram lead management software",
+    "instagram sales crm",
+  ],
+});
 
 const HomePage = () => {
   return (
     <main className="relative mx-auto flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getOrganizationSchema()),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getWebsiteSchema()),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getSoftwareApplicationSchema()),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getFaqSchema()),
+        }}
+      />
       <BlurFade
         delay={0.06}
         inView

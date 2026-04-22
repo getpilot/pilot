@@ -1,6 +1,47 @@
+import type { Metadata } from "next";
+import {
+  buildPageMetadata,
+  getBreadcrumbSchema,
+  getWebPageSchema,
+} from "@/lib/seo";
+
+const pageTitle = "The Pilot Manifesto";
+const pageDescription =
+  "Read the product philosophy behind Pilot: Instagram automation with CRM depth, account-safety guardrails, and open-source control.";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: pageTitle,
+  description: pageDescription,
+  path: "/manifesto",
+  keywords: ["pilot manifesto", "instagram automation philosophy"],
+});
+
 const ManifestoPage = () => {
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 pt-24 md:mt-16 pb-16 sm:px-6 lg:px-8">
+    <main className="mx-auto w-full max-w-4xl px-4 pt-24 pb-16 sm:px-6 md:mt-16 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            getBreadcrumbSchema([
+              { name: "Home", path: "/" },
+              { name: "Manifesto", path: "/manifesto" },
+            ]),
+          ),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            getWebPageSchema({
+              title: pageTitle,
+              description: pageDescription,
+              path: "/manifesto",
+            }),
+          ),
+        }}
+      />
       <p className="text-sm font-medium text-primary">Manifesto</p>
       <h1 className="font-heading mt-3 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
         The Pilot Manifesto
@@ -37,8 +78,9 @@ const ManifestoPage = () => {
           visibility, lead scoring, attribution, and automation diagnostics.
         </p>
         <p>If this matches how you work, join us and build with us.</p>
-        <p>— The Pilot team</p>
+        <p>The Pilot team</p>
       </div>
+
     </main>
   );
 };
