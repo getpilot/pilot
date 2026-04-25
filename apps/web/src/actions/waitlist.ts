@@ -30,16 +30,13 @@ const addToWaitlist = async (
       id: randomUUID(),
       email: email.trim().toLowerCase(),
       name: name.trim(),
+    }).onConflictDoNothing({
+      target: waitlist.email,
     });
 
     return { success: true };
   } catch (error: unknown) {
     console.error("Error in addToWaitlist action:", error);
-
-    const err = error as { code?: string };
-    if (err?.code === "23505") {
-      return { success: false, error: "Email is already on the waitlist" };
-    }
 
     return { success: false, error: "Failed to add to waitlist" };
   }

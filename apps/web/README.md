@@ -15,6 +15,9 @@ pnpm --filter web dev
 
 Site runs on `http://localhost:3001` by default.
 
+The waitlist form writes to the shared Postgres database, so `DATABASE_URL` is required for local development and Vercel deployments of this app.
+Copy `.env.example` to `.env.local` inside `apps/web` and set it to your Neon connection string.
+
 ## Useful Scripts
 
 From repo root:
@@ -37,3 +40,6 @@ pnpm --filter web lint
 Deploy this app as a separate Vercel project with root directory set to:
 
 `apps/web`
+
+Add `DATABASE_URL` in that Vercel project's environment variables.
+It is needed by the server action behind `/waitlist`.
