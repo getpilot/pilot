@@ -2,10 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Alert, AlertDescription, AlertTitle } from "@pilot/ui/components/alert";
-import { cn } from "@pilot/ui/lib/utils";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@pilot/ui/components/alert";
+import { Button } from "@pilot/ui/components/button";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Instagram } from "lucide-react";
 
 type InstagramStatus = {
   connected: boolean;
@@ -14,7 +18,7 @@ type InstagramStatus = {
 
 async function loadInstagramStatus(
   setStatus: (s: InstagramStatus) => void,
-  signal: AbortSignal
+  signal: AbortSignal,
 ) {
   try {
     const res = await fetch("/api/auth/instagram/status", {
@@ -57,24 +61,31 @@ export default function InstagramConnectionBanner() {
 
   return (
     <Alert
-      className={cn(
-        "border-0 border-b rounded-none flex flex-col items-center justify-center"
-      )}
+      className="flex items-center justify-between gap-3 rounded-none border-0 border-b bg-red-50 px-4 py-2 dark:bg-red-950/30 sm:px-6"
       variant="destructive"
     >
-      <AlertTitle className="text-lg font-semibold">
-        Instagram not connected
-      </AlertTitle>
-      <AlertDescription className="text-sm">
-        Connect your Instagram account in Settings to use automations and contact sync.
-      </AlertDescription>
+      <div className="flex min-w-0 items-center gap-3">
+        <Instagram className="size-4 shrink-0" aria-hidden="true" />
+        <div className="min-w-0">
+          <AlertTitle className="min-h-0 text-balance text-sm font-semibold">
+            Instagram not connected
+          </AlertTitle>
+          <AlertDescription className="text-pretty text-xs">
+            Connect Instagram to use automations and contact sync.
+          </AlertDescription>
+        </div>
+      </div>
       {!isOnSettings && (
-        <Link
-          href="/settings"
-          className="text-white mt-2 inline-flex items-center justify-center rounded-md bg-destructive px-4 py-1.5 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        <Button
+          asChild
+          variant="destructive"
+          size="sm"
+          className="h-7 shrink-0 px-3 text-xs"
         >
-          Go to Settings <ArrowRight className="size-4 ml-2" />
-        </Link>
+          <Link href="/settings">
+            Settings <ArrowRight className="ml-1.5 size-3.5" />
+          </Link>
+        </Button>
       )}
     </Alert>
   );

@@ -260,7 +260,8 @@ async function checkInstagramConnectionAction(
     setInstagramConnection(result);
     setStepValidationState((previousState) => ({
       ...previousState,
-      0: result.connected,
+      0: true,
+      1: true,
     }));
 
     if (result.connected) {
@@ -365,8 +366,8 @@ async function submitStep2Action(
       return;
     }
 
-    toast.success("Quick setup complete. Next up: Sidekick.");
-    router.push("/sidekick-onboarding");
+    toast.success("Quick setup complete.");
+    router.push("/");
   } catch (error) {
     console.error("Error submitting step 2:", error);
     toast.error("Hmm, something's not right. Give it another shot?");
@@ -394,8 +395,8 @@ function OnboardingPageContent() {
   const [stepValidationState, setStepValidationState] = useState<
     Record<number, boolean>
   >({
-    0: false,
-    1: false,
+    0: true,
+    1: true,
     2: false,
     3: false,
     4: false,
@@ -573,6 +574,15 @@ function OnboardingPageContent() {
     window.location.href = "/api/auth/instagram?returnTo=/onboarding";
   };
 
+  const handleSkipInstagram = () => {
+    setStepValidationState((previousState) => ({
+      ...previousState,
+      0: true,
+      1: true,
+    }));
+    setActiveStep(2);
+  };
+
   const handleRefreshPreview = async () => {
     setInstagramPreview(null);
     setPreviewError(null);
@@ -662,12 +672,12 @@ function OnboardingPageContent() {
             <Card className="overflow-hidden border-border bg-card text-card-foreground shadow-none">
               <div className="grid gap-8 p-6 md:grid-cols-[1.2fr_0.8fr] md:p-8">
                 <div className="flex flex-col gap-3">
-                  <h2 className="max-w-lg text-3xl font-semibold font-heading leading-tight">
+                  <h2 className="max-w-lg text-balance text-3xl font-semibold font-heading leading-tight">
                     Turn your next DM into revenue in 2 minutes.
                   </h2>
-                  <p className="max-w-md text-sm text-muted-foreground">
-                    Connect Instagram first so Pilot can show you what the
-                    product feels like before asking for setup details.
+                  <p className="max-w-md text-pretty text-sm text-muted-foreground">
+                    Connect Instagram now for a live preview, or skip it and
+                    finish your basic setup first.
                   </p>
                 </div>
 
@@ -698,8 +708,18 @@ function OnboardingPageContent() {
                     Connect Instagram
                   </Button>
 
-                  <p className="text-center text-sm text-muted-foreground">
-                    We&apos;ll only read DMs to train your AI.
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-12 w-full"
+                    disabled={isConnectingInstagram}
+                    onClick={handleSkipInstagram}
+                  >
+                    Skip for now
+                  </Button>
+
+                  <p className="text-center text-pretty text-sm text-muted-foreground">
+                    You can connect Instagram later from Settings.
                   </p>
                 </div>
               </div>
@@ -711,10 +731,10 @@ function OnboardingPageContent() {
               <CardHeader className="gap-3">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex flex-col gap-2">
-                    <CardTitle className="text-2xl font-heading">
+                    <CardTitle className="text-balance text-2xl font-heading">
                       Setting things up...
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-pretty">
                       We&apos;re pulling recent Instagram context and showing
                       you how Sidekick would jump into a real thread.
                     </CardDescription>
@@ -727,6 +747,31 @@ function OnboardingPageContent() {
                 </div>
               </CardHeader>
               <CardContent className="flex flex-col gap-6">
+                {!instagramConnection.connected ? (
+                  <div className="rounded-xl border bg-muted/40 p-6">
+                    <h3 className="text-balance font-medium">
+                      Instagram is optional
+                    </h3>
+                    <p className="mt-2 text-pretty text-sm text-muted-foreground">
+                      Skip the live preview for now and finish your basic setup.
+                      You can connect Instagram later from Settings.
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Button type="button" onClick={handleSkipInstagram}>
+                        Continue setup
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={isConnectingInstagram}
+                        onClick={handleInstagramConnect}
+                      >
+                        Connect Instagram
+                      </Button>
+                    </div>
+                  </div>
+                ) : null}
+
                 {isPreparingPreview ? (
                   <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
                     <div className="flex flex-col gap-3 rounded-xl border bg-muted/40 p-4">
@@ -1360,7 +1405,7 @@ function OnboardingPageContent() {
 
                   <StepButtons
                     onBack={handleBack}
-                    submitLabel="Continue To Sidekick"
+                    submitLabel="Finish Setup"
                     isLoading={isLoading}
                   />
                 </form>

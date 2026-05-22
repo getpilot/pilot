@@ -458,7 +458,7 @@ export default function SidekickOnboardingPage() {
         return;
       }
 
-      if (status.sidekick_onboarding_complete) {
+      if (status.isReady) {
         router.replace("/");
         if (isMounted) {
           setIsInitializing(false);
@@ -565,6 +565,17 @@ export default function SidekickOnboardingPage() {
         2: initialFaqs.length > 0,
         3: !!toneProfileResult?.success && !!toneProfileResult.data?.toneType,
       });
+
+      const requestedStep = Number(
+        new URLSearchParams(window.location.search).get("step"),
+      );
+      const stepFromUrl =
+        Number.isInteger(requestedStep) &&
+        requestedStep >= 0 &&
+        requestedStep <= 3
+          ? requestedStep
+          : null;
+      setActiveStep(stepFromUrl ?? status.resumeStep ?? 0);
       setIsInitializing(false);
     }
 
@@ -642,6 +653,10 @@ export default function SidekickOnboardingPage() {
     setActiveStep((prev) => prev + 1);
   };
 
+  const handleSkip = () => {
+    router.push("/");
+  };
+
   const isStepValid = (step: number) => {
     if (step === 1) {
       return offers.length > 0 && hasStoredMainOffering;
@@ -662,6 +677,21 @@ export default function SidekickOnboardingPage() {
     <section className="w-full max-w-5xl px-4 py-6 overflow-y-auto">
       <Card className="shadow-md border-border">
         <CardContent className="space-y-6 pt-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-1">
+              <h1 className="text-balance text-2xl font-semibold font-heading">
+                Set up Sidekick
+              </h1>
+              <p className="text-pretty text-sm text-muted-foreground">
+                Add the business details Sidekick needs before it can reply for
+                you.
+              </p>
+            </div>
+            <Button type="button" variant="ghost" onClick={handleSkip}>
+              Skip for now
+            </Button>
+          </div>
+
           <Stepper
             value={activeStep}
             onValueChange={(newStep) => {
