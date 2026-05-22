@@ -566,10 +566,10 @@ export default function SidekickOnboardingPage() {
         3: !!toneProfileResult?.success && !!toneProfileResult.data?.toneType,
       });
 
-      const requestedStep = Number(
-        new URLSearchParams(window.location.search).get("step"),
-      );
+      const stepParam = new URLSearchParams(window.location.search).get("step");
+      const requestedStep = stepParam !== null ? Number(stepParam) : null;
       const stepFromUrl =
+        requestedStep !== null &&
         Number.isInteger(requestedStep) &&
         requestedStep >= 0 &&
         requestedStep <= 3
