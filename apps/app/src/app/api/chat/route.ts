@@ -88,14 +88,19 @@ export async function POST(req: Request) {
   }
 
   const setupStatusResult = await getSidekickSetupStatusByUserId(db, user.id);
-  const setupStatus = setupStatusResult.success ? setupStatusResult.data : null;
 
   if (!setupStatusResult.success) {
     console.error(
       "Failed to check Sidekick setup status:",
       setupStatusResult.error,
     );
+    return Response.json(
+      { error: "Unable to verify Sidekick setup status. Please try again." },
+      { status: 503 },
+    );
   }
+
+  const setupStatus = setupStatusResult.data;
 
   if (!setupStatus?.isReady) {
     return Response.json(
