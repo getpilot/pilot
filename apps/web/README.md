@@ -2,7 +2,7 @@
 
 Marketing and waitlist site for Pilot.
 
-[![React Doctor](https://www.react.doctor/share/badge?p=web&s=99&w=6&f=6)](https://www.react.doctor/share?p=web&s=99&w=6&f=6)
+[![React Doctor](https://www.react.doctor/share/badge?p=web&s=98&w=22&f=10)](https://www.react.doctor/share?p=web&s=98&w=22&f=10)
 
 ## Local Development
 

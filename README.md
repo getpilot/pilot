@@ -12,8 +12,8 @@
 [![GitHub Issues](https://img.shields.io/github/issues/getpilot/app.svg)](https://github.com/getpilot/app/issues)
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/getpilot/app.svg)](https://github.com/getpilot/app/pulls)
 [![License](https://img.shields.io/badge/license-AGPLv3-blue.svg)](./LICENSE)
-[![App - React Doctor](https://www.react.doctor/share/badge?p=app&s=92&w=31&f=15)](https://www.react.doctor/share?p=app&s=92&w=31&f=15)
-[![Web - React Doctor](https://www.react.doctor/share/badge?p=web&s=99&w=6&f=6)](https://www.react.doctor/share?p=web&s=99&w=6&f=6)
+[![App - React Doctor](https://www.react.doctor/share/badge?p=app&s=90&e=1&w=33&f=15)](https://www.react.doctor/share?p=app&s=90&e=1&w=33&f=15)
+[![Web - React Doctor](https://www.react.doctor/share/badge?p=web&s=98&w=22&f=10)](https://www.react.doctor/share?p=web&s=98&w=22&f=10)
 
 </div>
 
