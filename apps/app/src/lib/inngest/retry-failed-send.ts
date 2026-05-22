@@ -20,8 +20,8 @@ export const retryFailedInstagramSend = inngest.createFunction(
     id: "retry-failed-instagram-send",
     name: "Retry Failed Instagram Send",
     retries: 0,
+    triggers: [{ event: "instagram/send-failed" }],
   },
-  { event: "instagram/send-failed" },
   async ({ event, step }) => {
     const {
       igUserId,

@@ -21,6 +21,7 @@ import { z } from "zod";
 import {
   DEFAULT_SIDEKICK_PROMPT,
   getBusinessKnowledgeSnapshotByUserId,
+  getSidekickSetupStatusByUserId,
 } from "@pilot/core/sidekick/personalization";
 import {
   getUserProfile,
@@ -86,6 +87,31 @@ export async function POST(req: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const setupStatusResult = await getSidekickSetupStatusByUserId(db, user.id);
+
+  if (!setupStatusResult.success) {
+    console.error(
+      "Failed to check Sidekick setup status:",
+      setupStatusResult.error,
+    );
+    return Response.json(
+      { error: "Unable to verify Sidekick setup status. Please try again." },
+      { status: 503 },
+    );
+  }
+
+  const setupStatus = setupStatusResult.data;
+
+  if (!setupStatus?.isReady) {
+    return Response.json(
+      {
+        error: "Complete Sidekick setup before using chat.",
+        resumeHref: setupStatus?.resumeHref || "/sidekick-onboarding?step=0",
+      },
+      { status: 403 },
+    );
+  }
+
   try {
     await assertBillingAllowed(user.id, "sidekick:chat");
   } catch (error) {
@@ -128,25 +154,29 @@ export async function POST(req: Request) {
     db,
     user.id,
   ).catch(() => null);
-  const [knowledgeProfile, workspaceProfile, knowledgeResults, workspaceResults] =
-    await Promise.all([
-      getMemoryProfile({
-        containerTag: getKnowledgeContainerTag(user.id),
-        q: latestUserText,
-      }).catch(() => null),
-      getMemoryProfile({
-        containerTag: getWorkspaceContainerTag(user.id),
-        q: latestUserText,
-      }).catch(() => null),
-      searchMemory({
-        containerTag: getKnowledgeContainerTag(user.id),
-        q: latestUserText,
-      }).catch(() => []),
-      searchMemory({
-        containerTag: getWorkspaceContainerTag(user.id),
-        q: latestUserText,
-      }).catch(() => []),
-    ]);
+  const [
+    knowledgeProfile,
+    workspaceProfile,
+    knowledgeResults,
+    workspaceResults,
+  ] = await Promise.all([
+    getMemoryProfile({
+      containerTag: getKnowledgeContainerTag(user.id),
+      q: latestUserText,
+    }).catch(() => null),
+    getMemoryProfile({
+      containerTag: getWorkspaceContainerTag(user.id),
+      q: latestUserText,
+    }).catch(() => null),
+    searchMemory({
+      containerTag: getKnowledgeContainerTag(user.id),
+      q: latestUserText,
+    }).catch(() => []),
+    searchMemory({
+      containerTag: getWorkspaceContainerTag(user.id),
+      q: latestUserText,
+    }).catch(() => []),
+  ]);
 
   const knowledgeMemoryContext = formatMemoryContext({
     title: "Business knowledge memory",
@@ -506,7 +536,9 @@ export async function POST(req: Request) {
         await saveChatSession({ sessionId: id, messages });
         console.log(`Saved ${messages.length} messages to session ${id}`);
 
-        const lastUserMessage = [...messages].reverse().find((item) => item.role === "user");
+        const lastUserMessage = [...messages]
+          .reverse()
+          .find((item) => item.role === "user");
         const lastAssistantMessage = [...messages]
           .reverse()
           .find((item) => item.role === "assistant");

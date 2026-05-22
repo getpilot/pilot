@@ -1,20 +1,5 @@
-export const sidekickSteps = [
-  {
-    id: 0,
-    name: "Your Links",
-  },
-  {
-    id: 1,
-    name: "What You Sell",
-  },
-  {
-    id: 2,
-    name: "Common Questions",
-  },
-  {
-    id: 3,
-    name: "Your Voice",
-  },
-];
+import { SIDEKICK_SETUP_STEPS } from "@pilot/core/sidekick/personalization";
+
+export const sidekickSteps = [...SIDEKICK_SETUP_STEPS];
 
 export const tone_options = ["Friendly", "Direct", "Like Me", "Custom"];

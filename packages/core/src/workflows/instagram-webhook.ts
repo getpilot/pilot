@@ -1,4 +1,9 @@
-import { automation, contact, instagramIntegration, sidekickActionLog } from "@pilot/db/schema";
+import {
+  automation,
+  contact,
+  instagramIntegration,
+  sidekickActionLog,
+} from "@pilot/db/schema";
 import { and, desc, eq, gt, or } from "drizzle-orm";
 import {
   postPublicCommentReply,
@@ -12,6 +17,7 @@ import { generateAutomationResponse } from "../automation/response";
 import { classifyHumanResponseNeeded } from "../ai/hrn";
 import { appendContactTranscriptMemory } from "../memory/supermemory";
 import { generateReply } from "../sidekick/reply";
+import { getSidekickSetupStatusByUserId } from "../sidekick/personalization";
 
 type GenericTemplateButton = {
   type: string;
@@ -103,14 +109,17 @@ async function upsertContactState(params: {
     });
 }
 
-function isValidTemplateElement(value: unknown): value is GenericTemplateElement {
+function isValidTemplateElement(
+  value: unknown,
+): value is GenericTemplateElement {
   if (!value || typeof value !== "object") {
     return false;
   }
 
   const record = value as Record<string, unknown>;
   const titleOrText = record.title ?? record.text;
-  const hasTitleOrText = typeof titleOrText === "string" && titleOrText.trim().length > 0;
+  const hasTitleOrText =
+    typeof titleOrText === "string" && titleOrText.trim().length > 0;
   if (!hasTitleOrText) {
     return false;
   }
@@ -124,8 +133,12 @@ function normalizeTemplateElements(rawElements: GenericTemplateElement[]) {
       typeof rawElement.title === "string" && rawElement.title
         ? rawElement.title
         : (rawElement.text as string),
-    subtitle: typeof rawElement.subtitle === "string" ? rawElement.subtitle : undefined,
-    image_url: typeof rawElement.image_url === "string" ? rawElement.image_url : undefined,
+    subtitle:
+      typeof rawElement.subtitle === "string" ? rawElement.subtitle : undefined,
+    image_url:
+      typeof rawElement.image_url === "string"
+        ? rawElement.image_url
+        : undefined,
     default_action:
       rawElement.default_action &&
       rawElement.default_action.type === "web_url" &&
@@ -135,7 +148,9 @@ function normalizeTemplateElements(rawElements: GenericTemplateElement[]) {
     buttons: Array.isArray(rawElement.buttons)
       ? rawElement.buttons
           .filter(
-            (button): button is { type: "web_url"; url: string; title: string } =>
+            (
+              button,
+            ): button is { type: "web_url"; url: string; title: string } =>
               !!button &&
               typeof button === "object" &&
               button.type === "web_url" &&
@@ -173,7 +188,8 @@ async function processCommentChanges(params: {
         : typeof value.comment_id === "string"
           ? value.comment_id
           : undefined;
-    const commenterId = typeof value.from?.id === "string" ? value.from.id : undefined;
+    const commenterId =
+      typeof value.from?.id === "string" ? value.from.id : undefined;
     const messageText = typeof value.text === "string" ? value.text : "";
     const mediaId =
       typeof value.media?.id === "string"
@@ -186,12 +202,13 @@ async function processCommentChanges(params: {
       continue;
     }
 
-    const integration = await params.dbClient.query.instagramIntegration.findFirst({
-      where: or(
-        eq(instagramIntegration.instagramUserId, params.igUserId),
-        eq(instagramIntegration.appScopedUserId, params.igUserId),
-      ),
-    });
+    const integration =
+      await params.dbClient.query.instagramIntegration.findFirst({
+        where: or(
+          eq(instagramIntegration.instagramUserId, params.igUserId),
+          eq(instagramIntegration.appScopedUserId, params.igUserId),
+        ),
+      });
     if (!integration) {
       continue;
     }
@@ -221,7 +238,8 @@ async function processCommentChanges(params: {
         prompt: matchedAutomation.responseContent,
         userMessage: messageText,
       });
-      replyText = aiResponse?.text || "Thanks for your comment! We'll follow up in DMs.";
+      replyText =
+        aiResponse?.text || "Thanks for your comment! We'll follow up in DMs.";
     }
 
     let sendResponse:
@@ -231,7 +249,9 @@ async function processCommentChanges(params: {
     if (matchedAutomation.responseType === "generic_template") {
       try {
         const parsed = JSON.parse(matchedAutomation.responseContent) as unknown;
-        const elements = Array.isArray(parsed) ? parsed.filter(isValidTemplateElement) : [];
+        const elements = Array.isArray(parsed)
+          ? parsed.filter(isValidTemplateElement)
+          : [];
         if (elements.length > 0) {
           const normalized = normalizeTemplateElements(elements);
           sendResponse = await sendInstagramCommentGenericTemplate({
@@ -270,7 +290,9 @@ async function processCommentChanges(params: {
       messageId,
     });
 
-    const commentReplyText = (matchedAutomation as { commentReplyText?: string | null }).commentReplyText;
+    const commentReplyText = (
+      matchedAutomation as { commentReplyText?: string | null }
+    ).commentReplyText;
     if (commentReplyText && commentReplyText.trim()) {
       try {
         await postPublicCommentReply({
@@ -294,12 +316,13 @@ async function processDirectMessage(params: {
   webhookMid?: string | null;
   resolveBillingStatus: (userId: string) => Promise<BillingWebhookStatus>;
 }) {
-  const integration = await params.dbClient.query.instagramIntegration.findFirst({
-    where: or(
-      eq(instagramIntegration.instagramUserId, params.igUserId),
-      eq(instagramIntegration.appScopedUserId, params.igUserId),
-    ),
-  });
+  const integration =
+    await params.dbClient.query.instagramIntegration.findFirst({
+      where: or(
+        eq(instagramIntegration.instagramUserId, params.igUserId),
+        eq(instagramIntegration.appScopedUserId, params.igUserId),
+      ),
+    });
 
   if (!integration) {
     return { status: "ok" } as const;
@@ -367,7 +390,10 @@ async function processDirectMessage(params: {
   }
 
   const existingContact = await params.dbClient.query.contact.findFirst({
-    where: and(eq(contact.userId, integration.userId), eq(contact.id, params.senderId)),
+    where: and(
+      eq(contact.userId, integration.userId),
+      eq(contact.id, params.senderId),
+    ),
   });
 
   if (!existingContact && !billingStatus.flags.canCreateContact) {
@@ -390,7 +416,9 @@ async function processDirectMessage(params: {
     return { status: "ok", hrn: true } as const;
   }
 
-  const hrnDecision = await classifyHumanResponseNeeded({ message: params.messageText });
+  const hrnDecision = await classifyHumanResponseNeeded({
+    message: params.messageText,
+  });
   if (hrnDecision.hrn) {
     await upsertContactState({
       dbClient: params.dbClient,
@@ -440,6 +468,31 @@ async function processDirectMessage(params: {
   }
 
   if (!replyText) {
+    const setupStatusResult = await getSidekickSetupStatusByUserId(
+      params.dbClient,
+      integration.userId,
+    );
+
+    if (!setupStatusResult.success) {
+      console.error(
+        "Failed to check Sidekick setup status",
+        setupStatusResult.error,
+      );
+    } else if (!setupStatusResult.data.isReady) {
+      await upsertContactState({
+        dbClient: params.dbClient,
+        contactId: params.senderId,
+        userId: integration.userId,
+        messageText: params.messageText,
+        stage: existingContact?.stage ?? "new",
+        sentiment: existingContact?.sentiment ?? "neutral",
+        leadScore: existingContact?.leadScore ?? 50,
+        requiresHRN: existingContact?.requiresHumanResponse ?? false,
+        humanResponseSetAt: existingContact?.humanResponseSetAt ?? null,
+      });
+      return { status: "ok", sidekickBlocked: true } as const;
+    }
+
     const reply = await generateReply({
       dbClient: params.dbClient,
       userId: integration.userId,
@@ -480,8 +533,10 @@ async function processDirectMessage(params: {
 
   const delivered = sendResponse.status >= 200 && sendResponse.status < 300;
   const messageId =
-    (sendResponse.data as { id?: string; message_id?: string } | undefined)?.id ||
-    (sendResponse.data as { id?: string; message_id?: string } | undefined)?.message_id;
+    (sendResponse.data as { id?: string; message_id?: string } | undefined)
+      ?.id ||
+    (sendResponse.data as { id?: string; message_id?: string } | undefined)
+      ?.message_id;
   const now = new Date();
 
   await params.dbClient
@@ -623,7 +678,13 @@ export async function processInstagramWebhook(params: {
   const messageText = message?.message?.text || "";
   const isEcho = Boolean(message?.message?.is_echo);
 
-  if (!entry?.id || !senderId || !messageText || isEcho || senderId === entry.id) {
+  if (
+    !entry?.id ||
+    !senderId ||
+    !messageText ||
+    isEcho ||
+    senderId === entry.id
+  ) {
     return { status: "ok" } as const;
   }
 

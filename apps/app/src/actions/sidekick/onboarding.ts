@@ -14,6 +14,10 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { enqueueBusinessKnowledgeSync } from "@/lib/supermemory/events";
+import {
+  getSidekickSetupStatusByUserId,
+  SIDEKICK_SETUP_STEPS,
+} from "@pilot/core/sidekick/personalization";
 
 export type SidekickOnboardingData = {
   offerLinks?: {
@@ -39,7 +43,7 @@ export type SidekickOnboardingData = {
 };
 
 export async function updateSidekickOnboardingData(
-  data: SidekickOnboardingData
+  data: SidekickOnboardingData,
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -69,8 +73,8 @@ export async function updateSidekickOnboardingData(
             and(
               eq(userOfferLink.userId, session.user.id),
               eq(userOfferLink.type, link.type),
-              eq(userOfferLink.url, link.url)
-            )
+              eq(userOfferLink.url, link.url),
+            ),
           );
 
         if (existingLinks.length === 0) {
@@ -93,8 +97,8 @@ export async function updateSidekickOnboardingData(
             and(
               eq(userOffer.userId, session.user.id),
               eq(userOffer.name, offer.name),
-              eq(userOffer.content, offer.content)
-            )
+              eq(userOffer.content, offer.content),
+            ),
           );
 
         if (existingOffers.length === 0) {
@@ -117,8 +121,8 @@ export async function updateSidekickOnboardingData(
           .where(
             and(
               eq(userFaq.userId, session.user.id),
-              eq(userFaq.question, faq.question)
-            )
+              eq(userFaq.question, faq.question),
+            ),
           );
 
         if (existingFaqs.length === 0) {
@@ -195,7 +199,7 @@ export async function deleteOffer(offerId: string) {
     await db
       .delete(userOffer)
       .where(
-        and(eq(userOffer.id, offerId), eq(userOffer.userId, session.user.id))
+        and(eq(userOffer.id, offerId), eq(userOffer.userId, session.user.id)),
       );
 
     await enqueueBusinessKnowledgeSync(session.user.id, "deleteOffer");
@@ -228,8 +232,8 @@ export async function saveSidekickOfferLink(linkData: {
         and(
           eq(userOfferLink.url, linkData.url),
           eq(userOfferLink.userId, session.user.id),
-          eq(userOfferLink.type, linkData.type)
-        )
+          eq(userOfferLink.type, linkData.type),
+        ),
       );
 
     if (existingLinks.length === 0) {
@@ -322,8 +326,8 @@ export async function saveSidekickOffer(offerData: {
         and(
           eq(userOffer.userId, session.user.id),
           eq(userOffer.name, offerData.name),
-          eq(userOffer.content, offerData.content)
-        )
+          eq(userOffer.content, offerData.content),
+        ),
       );
 
     if (existingOffers.length === 0) {
@@ -336,10 +340,7 @@ export async function saveSidekickOffer(offerData: {
       });
     }
 
-    await enqueueBusinessKnowledgeSync(
-      session.user.id,
-      "saveSidekickOffer",
-    );
+    await enqueueBusinessKnowledgeSync(session.user.id, "saveSidekickOffer");
 
     return { success: true };
   } catch (error) {
@@ -582,22 +583,40 @@ export async function checkSidekickOnboardingStatus() {
 
   try {
     const db = await getRLSDb();
-    const userData = await db
-      .select({
-        sidekick_onboarding_complete: user.sidekick_onboarding_complete,
-      })
-      .from(user)
-      .where(eq(user.id, session.user.id))
-      .then((res) => res[0]);
+    const result = await getSidekickSetupStatusByUserId(db, session.user.id);
+
+    if (result.success) {
+      return result.data;
+    }
 
     return {
-      sidekick_onboarding_complete:
-        userData?.sidekick_onboarding_complete || false,
+      sidekick_onboarding_complete: false,
+      isReady: false,
+      resumeStep: 0,
+      resumeHref: "/sidekick-onboarding?step=0",
+      completedSteps: 0,
+      totalSteps: SIDEKICK_SETUP_STEPS.length,
+      missing: ["Sidekick setup data"],
+      steps: SIDEKICK_SETUP_STEPS.map((step) => ({
+        ...step,
+        complete: false,
+      })),
+      error: result.error,
     };
   } catch (error) {
     console.error("Error checking onboarding status:", error);
     return {
       sidekick_onboarding_complete: false,
+      isReady: false,
+      resumeStep: 0,
+      resumeHref: "/sidekick-onboarding?step=0",
+      completedSteps: 0,
+      totalSteps: SIDEKICK_SETUP_STEPS.length,
+      missing: ["Sidekick setup data"],
+      steps: SIDEKICK_SETUP_STEPS.map((step) => ({
+        ...step,
+        complete: false,
+      })),
       error: "Failed to check onboarding status",
     };
   }

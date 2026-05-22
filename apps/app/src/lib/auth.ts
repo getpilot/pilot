@@ -62,11 +62,10 @@ export const auth = betterAuth({
         checkout({
           products: checkoutProducts,
           authenticatedUsersOnly: true,
-          successUrl: "/sidekick-onboarding",
+          successUrl: "/",
         }),
         portal(),
       ],
     }),
   ],
 });
-

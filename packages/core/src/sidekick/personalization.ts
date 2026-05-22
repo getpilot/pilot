@@ -9,6 +9,50 @@ import type { BusinessKnowledgeSnapshot } from "../memory/supermemory";
 import type { Offer, UserPersonalizationData } from "@pilot/types/user";
 import { eq } from "drizzle-orm";
 
+export const SIDEKICK_SETUP_STEPS = [
+  {
+    id: 0,
+    name: "Your Links",
+  },
+  {
+    id: 1,
+    name: "What You Sell",
+  },
+  {
+    id: 2,
+    name: "Common Questions",
+  },
+  {
+    id: 3,
+    name: "Your Voice",
+  },
+] as const;
+
+export type SidekickSetupStatus = {
+  sidekick_onboarding_complete: boolean;
+  isReady: boolean;
+  resumeStep: number;
+  resumeHref: string;
+  completedSteps: number;
+  totalSteps: number;
+  missing: string[];
+  steps: Array<{
+    id: number;
+    name: string;
+    complete: boolean;
+  }>;
+};
+
+export type SidekickSetupStatusResult =
+  | {
+      success: true;
+      data: SidekickSetupStatus;
+    }
+  | {
+      success: false;
+      error: string;
+    };
+
 export const DEFAULT_SIDEKICK_PROMPT =
   "You are Sidekick, Pilot's sales assistant. Reply as the business owner. Rely on retrieved memory and current context. Never invent business facts. Write like a real human: professional, natural, clear, direct, and conversational. Sound like you are explaining something to a smart friend over coffee. Use simple words and short sentences. Stay on point. Do not use buzzwords, corporate jargon, press-release language, fluff, or em dashes. Do not use the 'no x, no y, but z' pattern.";
 
@@ -29,6 +73,123 @@ const PROMPTS = {
     MAIN: `Continue the Instagram DM with the customer in 1-2 short sentences.\n\nBusiness: {businessName}\nMain offering: {mainOffering}\nTone guidance: {toneGuidance}\n\nRecent transcript:\n{recentTranscript}\n\nBusiness knowledge:\n{businessKnowledge}\n\nContact memory:\n{contactMemory}\n\nBe helpful, friendly, and move toward the next step. Keep it under 280 characters. If the customer asks for exact price, offer details, or policies, use the supplied business knowledge. If it is not present, ask a short clarifying question instead of guessing.`,
   },
 } as const;
+
+export async function getSidekickSetupStatusByUserId(
+  dbClient: any,
+  userId: string,
+): Promise<SidekickSetupStatusResult> {
+  try {
+    const [userData, links, offers, toneProfiles, faqs] = await Promise.all([
+      dbClient
+        .select({
+          main_offering: user.main_offering,
+          sidekick_onboarding_complete: user.sidekick_onboarding_complete,
+        })
+        .from(user)
+        .where(eq(user.id, userId))
+        .then((rows: Array<Record<string, unknown>>) => rows[0]),
+      dbClient
+        .select()
+        .from(userOfferLink)
+        .where(eq(userOfferLink.userId, userId)),
+      dbClient.select().from(userOffer).where(eq(userOffer.userId, userId)),
+      dbClient
+        .select()
+        .from(userToneProfile)
+        .where(eq(userToneProfile.userId, userId))
+        .limit(1),
+      dbClient.select().from(userFaq).where(eq(userFaq.userId, userId)),
+    ]);
+
+    if (!userData) {
+      return { success: false, error: "User not found" } as const;
+    }
+
+    const hasPrimaryOfferLink = links.some(
+      (link: { type?: string; url?: string | null }) =>
+        link.type === "primary" && !!link.url?.trim(),
+    );
+    const hasOffer = offers.some(
+      (offer: { name?: string | null; content?: string | null }) =>
+        !!offer.name?.trim() && !!offer.content?.trim(),
+    );
+    const hasMainOffering =
+      typeof userData.main_offering === "string" &&
+      userData.main_offering.trim().length > 0;
+    const hasFaq = faqs.some(
+      (faq: { question?: string | null }) => !!faq.question?.trim(),
+    );
+    const hasToneProfile = !!toneProfiles[0]?.toneType;
+
+    const steps = SIDEKICK_SETUP_STEPS.map((step) => {
+      const complete =
+        step.id === 0
+          ? hasPrimaryOfferLink
+          : step.id === 1
+            ? hasOffer && hasMainOffering
+            : step.id === 2
+              ? hasFaq
+              : hasToneProfile;
+
+      return {
+        ...step,
+        complete,
+      };
+    });
+    const missing = [
+      !hasPrimaryOfferLink ? "main offer page" : null,
+      !hasOffer ? "at least one offer" : null,
+      !hasMainOffering ? "main offering" : null,
+      !hasFaq ? "at least one common question" : null,
+      !hasToneProfile ? "tone profile" : null,
+    ].filter((item): item is string => Boolean(item));
+    const firstIncompleteStep = steps.find((step) => !step.complete);
+    const hasRequiredData = missing.length === 0;
+    const resumeStep = firstIncompleteStep?.id ?? 0;
+    const persistedSidekickOnboardingComplete = Boolean(
+      userData.sidekick_onboarding_complete,
+    );
+
+    if (hasRequiredData && !persistedSidekickOnboardingComplete) {
+      try {
+        await dbClient
+          .update(user)
+          .set({ sidekick_onboarding_complete: true })
+          .where(eq(user.id, userId));
+      } catch (error) {
+        console.error(
+          "Failed to persist Sidekick onboarding completion:",
+          error,
+        );
+      }
+    }
+
+    const sidekick_onboarding_complete =
+      persistedSidekickOnboardingComplete || hasRequiredData;
+
+    return {
+      success: true,
+      data: {
+        sidekick_onboarding_complete,
+        isReady: hasRequiredData,
+        resumeStep,
+        resumeHref: hasRequiredData
+          ? "/"
+          : `/sidekick-onboarding?step=${resumeStep}`,
+        completedSteps: steps.filter((step) => step.complete).length,
+        totalSteps: steps.length,
+        missing,
+        steps,
+      },
+    } as const;
+  } catch (error) {
+    console.error("Error checking sidekick setup status:", error);
+    return {
+      success: false,
+      error: "Failed to check sidekick setup status",
+    } as const;
+  }
+}
 
 export async function getPersonalizedSidekickDataByUserId(
   dbClient: any,
@@ -240,7 +401,8 @@ function buildToneGuidanceFromProfile(
   const samples = Array.isArray(toneProfileRecord?.sampleText)
     ? toneProfileRecord.sampleText.filter(Boolean).slice(0, 3)
     : [];
-  const sampleSuffix = samples.length > 0 ? ` Examples: ${samples.join(" | ")}` : "";
+  const sampleSuffix =
+    samples.length > 0 ? ` Examples: ${samples.join(" | ")}` : "";
 
   switch (toneType) {
     case "direct":
@@ -266,13 +428,20 @@ export async function getBusinessKnowledgeSnapshotByUserId(
 
   return {
     mainOffering: result.data.user?.main_offering || null,
-    faqs: result.data.faqs.map((faq: { id: string; question: string; answer?: string | null }) => ({
-      id: faq.id,
-      question: faq.question,
-      answer: faq.answer ?? null,
-    })),
+    faqs: result.data.faqs.map(
+      (faq: { id: string; question: string; answer?: string | null }) => ({
+        id: faq.id,
+        question: faq.question,
+        answer: faq.answer ?? null,
+      }),
+    ),
     offers: result.data.offers.map(
-      (offer: { id: string; name: string; content: string; value?: number | null }) => ({
+      (offer: {
+        id: string;
+        name: string;
+        content: string;
+        value?: number | null;
+      }) => ({
         id: offer.id,
         name: offer.name,
         content: offer.content,
