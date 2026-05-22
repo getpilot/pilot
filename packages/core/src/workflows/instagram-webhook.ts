@@ -468,13 +468,20 @@ async function processDirectMessage(params: {
   }
 
   if (!replyText) {
-    const setupStatus = await getSidekickSetupStatusByUserId(
+    const setupStatusResult = await getSidekickSetupStatusByUserId(
       params.dbClient,
       integration.userId,
-    ).catch((error) => {
-      console.error("Failed to check Sidekick setup status", error);
-      return null;
-    });
+    );
+    const setupStatus = setupStatusResult.success
+      ? setupStatusResult.data
+      : null;
+
+    if (!setupStatusResult.success) {
+      console.error(
+        "Failed to check Sidekick setup status",
+        setupStatusResult.error,
+      );
+    }
 
     if (!setupStatus?.isReady) {
       await upsertContactState({

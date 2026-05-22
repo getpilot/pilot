@@ -43,6 +43,16 @@ export type SidekickSetupStatus = {
   }>;
 };
 
+export type SidekickSetupStatusResult =
+  | {
+      success: true;
+      data: SidekickSetupStatus;
+    }
+  | {
+      success: false;
+      error: string;
+    };
+
 export const DEFAULT_SIDEKICK_PROMPT =
   "You are Sidekick, Pilot's sales assistant. Reply as the business owner. Rely on retrieved memory and current context. Never invent business facts. Write like a real human: professional, natural, clear, direct, and conversational. Sound like you are explaining something to a smart friend over coffee. Use simple words and short sentences. Stay on point. Do not use buzzwords, corporate jargon, press-release language, fluff, or em dashes. Do not use the 'no x, no y, but z' pattern.";
 
@@ -67,90 +77,118 @@ const PROMPTS = {
 export async function getSidekickSetupStatusByUserId(
   dbClient: any,
   userId: string,
-): Promise<SidekickSetupStatus> {
-  const [userData, links, offers, toneProfiles, faqs] = await Promise.all([
-    dbClient
-      .select({
-        main_offering: user.main_offering,
-        sidekick_onboarding_complete: user.sidekick_onboarding_complete,
-      })
-      .from(user)
-      .where(eq(user.id, userId))
-      .then((rows: Array<Record<string, unknown>>) => rows[0]),
-    dbClient
-      .select()
-      .from(userOfferLink)
-      .where(eq(userOfferLink.userId, userId)),
-    dbClient.select().from(userOffer).where(eq(userOffer.userId, userId)),
-    dbClient
-      .select()
-      .from(userToneProfile)
-      .where(eq(userToneProfile.userId, userId))
-      .limit(1),
-    dbClient.select().from(userFaq).where(eq(userFaq.userId, userId)),
-  ]);
+): Promise<SidekickSetupStatusResult> {
+  try {
+    const [userData, links, offers, toneProfiles, faqs] = await Promise.all([
+      dbClient
+        .select({
+          main_offering: user.main_offering,
+          sidekick_onboarding_complete: user.sidekick_onboarding_complete,
+        })
+        .from(user)
+        .where(eq(user.id, userId))
+        .then((rows: Array<Record<string, unknown>>) => rows[0]),
+      dbClient
+        .select()
+        .from(userOfferLink)
+        .where(eq(userOfferLink.userId, userId)),
+      dbClient.select().from(userOffer).where(eq(userOffer.userId, userId)),
+      dbClient
+        .select()
+        .from(userToneProfile)
+        .where(eq(userToneProfile.userId, userId))
+        .limit(1),
+      dbClient.select().from(userFaq).where(eq(userFaq.userId, userId)),
+    ]);
 
-  if (!userData) {
-    throw new Error("User not found");
-  }
+    if (!userData) {
+      return { success: false, error: "User not found" } as const;
+    }
 
-  const hasPrimaryOfferLink = links.some(
-    (link: { type?: string; url?: string | null }) =>
-      link.type === "primary" && !!link.url?.trim(),
-  );
-  const hasOffer = offers.some(
-    (offer: { name?: string | null; content?: string | null }) =>
-      !!offer.name?.trim() && !!offer.content?.trim(),
-  );
-  const hasMainOffering =
-    typeof userData.main_offering === "string" &&
-    userData.main_offering.trim().length > 0;
-  const hasFaq = faqs.some(
-    (faq: { question?: string | null }) => !!faq.question?.trim(),
-  );
-  const hasToneProfile = !!toneProfiles[0]?.toneType;
+    const hasPrimaryOfferLink = links.some(
+      (link: { type?: string; url?: string | null }) =>
+        link.type === "primary" && !!link.url?.trim(),
+    );
+    const hasOffer = offers.some(
+      (offer: { name?: string | null; content?: string | null }) =>
+        !!offer.name?.trim() && !!offer.content?.trim(),
+    );
+    const hasMainOffering =
+      typeof userData.main_offering === "string" &&
+      userData.main_offering.trim().length > 0;
+    const hasFaq = faqs.some(
+      (faq: { question?: string | null }) => !!faq.question?.trim(),
+    );
+    const hasToneProfile = !!toneProfiles[0]?.toneType;
 
-  const steps = SIDEKICK_SETUP_STEPS.map((step) => {
-    const complete =
-      step.id === 0
-        ? hasPrimaryOfferLink
-        : step.id === 1
-          ? hasOffer && hasMainOffering
-          : step.id === 2
-            ? hasFaq
-            : hasToneProfile;
+    const steps = SIDEKICK_SETUP_STEPS.map((step) => {
+      const complete =
+        step.id === 0
+          ? hasPrimaryOfferLink
+          : step.id === 1
+            ? hasOffer && hasMainOffering
+            : step.id === 2
+              ? hasFaq
+              : hasToneProfile;
+
+      return {
+        ...step,
+        complete,
+      };
+    });
+    const missing = [
+      !hasPrimaryOfferLink ? "main offer page" : null,
+      !hasOffer ? "at least one offer" : null,
+      !hasMainOffering ? "main offering" : null,
+      !hasFaq ? "at least one common question" : null,
+      !hasToneProfile ? "tone profile" : null,
+    ].filter((item): item is string => Boolean(item));
+    const firstIncompleteStep = steps.find((step) => !step.complete);
+    const hasRequiredData = missing.length === 0;
+    const resumeStep = firstIncompleteStep?.id ?? 0;
+    const persistedSidekickOnboardingComplete = Boolean(
+      userData.sidekick_onboarding_complete,
+    );
+
+    if (hasRequiredData && !persistedSidekickOnboardingComplete) {
+      try {
+        await dbClient
+          .update(user)
+          .set({ sidekick_onboarding_complete: true })
+          .where(eq(user.id, userId));
+      } catch (error) {
+        console.error(
+          "Failed to persist Sidekick onboarding completion:",
+          error,
+        );
+      }
+    }
+
+    const sidekick_onboarding_complete =
+      persistedSidekickOnboardingComplete || hasRequiredData;
 
     return {
-      ...step,
-      complete,
-    };
-  });
-  const missing = [
-    !hasPrimaryOfferLink ? "main offer page" : null,
-    !hasOffer ? "at least one offer" : null,
-    !hasMainOffering ? "main offering" : null,
-    !hasFaq ? "at least one common question" : null,
-    !hasToneProfile ? "tone profile" : null,
-  ].filter((item): item is string => Boolean(item));
-  const firstIncompleteStep = steps.find((step) => !step.complete);
-  const resumeStep =
-    firstIncompleteStep?.id ??
-    SIDEKICK_SETUP_STEPS[SIDEKICK_SETUP_STEPS.length - 1].id;
-  const hasRequiredData = missing.length === 0;
-  const sidekick_onboarding_complete = Boolean(
-    userData.sidekick_onboarding_complete,
-  );
-
-  return {
-    sidekick_onboarding_complete,
-    isReady: sidekick_onboarding_complete && hasRequiredData,
-    resumeStep,
-    resumeHref: `/sidekick-onboarding?step=${resumeStep}`,
-    completedSteps: steps.filter((step) => step.complete).length,
-    totalSteps: steps.length,
-    missing,
-    steps,
-  };
+      success: true,
+      data: {
+        sidekick_onboarding_complete,
+        isReady: hasRequiredData,
+        resumeStep,
+        resumeHref: hasRequiredData
+          ? "/"
+          : `/sidekick-onboarding?step=${resumeStep}`,
+        completedSteps: steps.filter((step) => step.complete).length,
+        totalSteps: steps.length,
+        missing,
+        steps,
+      },
+    } as const;
+  } catch (error) {
+    console.error("Error checking sidekick setup status:", error);
+    return {
+      success: false,
+      error: "Failed to check sidekick setup status",
+    } as const;
+  }
 }
 
 export async function getPersonalizedSidekickDataByUserId(

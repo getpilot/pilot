@@ -583,7 +583,26 @@ export async function checkSidekickOnboardingStatus() {
 
   try {
     const db = await getRLSDb();
-    return await getSidekickSetupStatusByUserId(db, session.user.id);
+    const result = await getSidekickSetupStatusByUserId(db, session.user.id);
+
+    if (result.success) {
+      return result.data;
+    }
+
+    return {
+      sidekick_onboarding_complete: false,
+      isReady: false,
+      resumeStep: 0,
+      resumeHref: "/sidekick-onboarding?step=0",
+      completedSteps: 0,
+      totalSteps: SIDEKICK_SETUP_STEPS.length,
+      missing: ["Sidekick setup data"],
+      steps: SIDEKICK_SETUP_STEPS.map((step) => ({
+        ...step,
+        complete: false,
+      })),
+      error: result.error,
+    };
   } catch (error) {
     console.error("Error checking onboarding status:", error);
     return {

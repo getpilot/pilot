@@ -87,12 +87,15 @@ export async function POST(req: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const setupStatus = await getSidekickSetupStatusByUserId(db, user.id).catch(
-    (error) => {
-      console.error("Failed to check Sidekick setup status:", error);
-      return null;
-    },
-  );
+  const setupStatusResult = await getSidekickSetupStatusByUserId(db, user.id);
+  const setupStatus = setupStatusResult.success ? setupStatusResult.data : null;
+
+  if (!setupStatusResult.success) {
+    console.error(
+      "Failed to check Sidekick setup status:",
+      setupStatusResult.error,
+    );
+  }
 
   if (!setupStatus?.isReady) {
     return Response.json(
