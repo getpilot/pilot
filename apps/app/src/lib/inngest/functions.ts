@@ -23,8 +23,8 @@ export const syncInstagramContacts = inngest.createFunction(
   {
     id: "sync-instagram-contacts",
     name: "Sync Instagram Contacts",
+    triggers: [{ event: "contacts/sync" }],
   },
-  { event: "contacts/sync" },
   async ({ event, step }) => {
     const { userId, fullSync = false } = event.data as {
       userId?: string;
@@ -148,8 +148,11 @@ export const syncInstagramContacts = inngest.createFunction(
 );
 
 export const scheduleContactsSync = inngest.createFunction(
-  { id: "schedule-contacts-sync", name: "Schedule Contacts Sync" },
-  { cron: "0 * * * *" },
+  {
+    id: "schedule-contacts-sync",
+    name: "Schedule Contacts Sync",
+    triggers: [{ cron: "0 * * * *" }],
+  },
   async ({ step }) => {
     const integrations = await step.run("load-integrations", async () => {
       return db.query.instagramIntegration.findMany({});
@@ -184,8 +187,8 @@ export const syncBusinessKnowledge = inngest.createFunction(
     id: "sync-business-knowledge-memory",
     name: "Sync Business Knowledge Memory",
     retries: 1,
+    triggers: [{ event: "memory/knowledge.sync" }],
   },
-  { event: "memory/knowledge.sync" },
   async ({ event, step }) => {
     const { userId } = event.data as { userId?: string };
 
@@ -204,8 +207,8 @@ export const backfillActiveContactMemory = inngest.createFunction(
     id: "backfill-active-contact-memory",
     name: "Backfill Active Contact Memory",
     retries: 0,
+    triggers: [{ event: "memory/contact.backfill" }],
   },
-  { event: "memory/contact.backfill" },
   async ({ event, step }) => {
     const { userId } = event.data as { userId?: string };
 
@@ -328,8 +331,11 @@ export const backfillActiveContactMemory = inngest.createFunction(
 );
 
 export const refreshInstagramTokens = inngest.createFunction(
-  { id: "refresh-instagram-tokens", name: "Refresh Instagram Tokens" },
-  { cron: "0 3 * * *" },
+  {
+    id: "refresh-instagram-tokens",
+    name: "Refresh Instagram Tokens",
+    triggers: [{ cron: "0 3 * * *" }],
+  },
   async ({ step }) => {
     const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
